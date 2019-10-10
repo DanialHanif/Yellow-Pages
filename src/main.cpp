@@ -1,10 +1,13 @@
 #include <iostream>
-
-using namespace std;
+#include "User.cpp"
 
 int main(){
 
-    cout << "Hello World!\n";
+    User a;
+
+    a.setup();
+
+    a.printInfo();
 
     return 0;
 }

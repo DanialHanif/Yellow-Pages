@@ -55,7 +55,7 @@
 
     }
 
-    void User::setup(){
+    void User::signUp(){
 
         std::cout << "Fill in the details:" << std::endl;
         std::cout << "Username: "; std::cin >> username; std::cin.ignore();

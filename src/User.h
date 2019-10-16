@@ -26,7 +26,7 @@ class User {
         std::string getRegistrationDate();
         std::vector<std::string> getSkills();
 
-        void setup();
+        void signUp();
         void setUsername(std::string);
         void setFullName(std::string);
         void setEmailAddress(std::string);

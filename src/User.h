@@ -7,16 +7,42 @@
 
 class User {
 
+	//skill with descriptions
+	struct Skills {
+
+		int id;
+		std::string name;
+		std::string description;
+		int level;
+		Skills* next;
+
+	};
+
+	//userdata structure
+	struct UserData {
+
+		int id;
+		std::string username;
+		std::string fullName;
+		std::string emailAddress;
+		std::string dateOfBirth;
+		std::string streetAddress;
+		std::string password;
+		std::string	registrationDate;
+		Skills* skills;
+	};
+
+
 
     protected:
-        int id;
-        std::string username, fullName, emailAddress, dateOfBirth, streetAddress, password, registrationDate;
-        std::vector<std::string> skills;
+
+		UserData* userData;
 
     public:
 
         User();
 
+		int getID();
         std::string getUsername();
         std::string getFullName();
         std::string getEmailAddress();
@@ -24,9 +50,10 @@ class User {
         std::string getStreetAddress();
         std::string getPassword();
         std::string getRegistrationDate();
-        std::vector<std::string> getSkills();
+        UserData getSkills();
 
         void setup();
+		void setID(int id);
         void setUsername(std::string);
         void setFullName(std::string);
         void setEmailAddress(std::string);

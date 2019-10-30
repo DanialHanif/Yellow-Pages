@@ -1,11 +1,11 @@
 #include <iostream>
-#include "User.cpp"
+#include "User.h"
 
 int main(){
 
     User a;
 
-    a.setup();
+    a.signUp();
 
     a.printInfo();
 

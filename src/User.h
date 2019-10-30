@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <ctime>
 
 #ifndef USER_H
 #define USER_H
@@ -12,6 +13,7 @@ class User {
         int id;
         std::string username, fullName, emailAddress, dateOfBirth, streetAddress, password, registrationDate;
         std::vector<std::string> skills;
+        std::time_t time;
 
     public:
 

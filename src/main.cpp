@@ -5,7 +5,7 @@ int main(){
 
     User a;
 
-    a.signUp();
+    a.setup();
 
     a.printInfo();
 

@@ -1,43 +1,19 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <ctime>
+#include "Nodes.h"
 
 #ifndef USER_H
 #define USER_H
 
 class User {
 
-	//skill with descriptions
-	struct Skills {
-
-		int id;
-		std::string name;
-		std::string description;
-		int level;
-		Skills* next;
-
-	};
-
-	//userdata structure
-	struct UserData {
-
-		int id;
-		std::string username;
-		std::string fullName;
-		std::string emailAddress;
-		std::string dateOfBirth;
-		std::string streetAddress;
-		std::string password;
-		std::string	registrationDate;
-		Skills* skills;
-	};
-
-
 
     protected:
 
 		UserData* userData;
+		Skills* skills;
+		
 
     public:
 
@@ -51,10 +27,10 @@ class User {
         std::string getStreetAddress();
         std::string getPassword();
         std::string getRegistrationDate();
-        UserData getSkills();
+        Skills* getSkills();
 
         void setup();
-		void setID(int id);
+		void setID(int);
         void setUsername(std::string);
         void setFullName(std::string);
         void setEmailAddress(std::string);
@@ -62,8 +38,8 @@ class User {
         void setStreetAddress(std::string);
         void setPassword(std::string);
         void setRegistrationDate(std::string);
-        void addSkills(std::string);
-        void deleteSkills(int n);
+        void addSkills(std::string, std::string, int);
+        void deleteSkills(int&);
 
         void printInfo();
         

@@ -49,13 +49,38 @@ struct Hotel {
 	std::string company;
 	std::string website;
 	Company* companyLink;
-	Hotel next;
+	Hotel* next;
 
 };
 
 struct UserList {
 
-	User user;
+
 	UserList* link;
 
-}
+};
+
+//skill with descriptions
+struct Skills {
+
+	int id;
+	std::string name;
+	std::string description;
+	int level;
+	Skills* next;
+
+};
+
+//userdata structure
+struct UserData {
+
+	int USER_ID;
+	std::string USER_NAME;
+	std::string USER_FULL_NAME;
+	std::string USER_EMAIL;
+	std::string USER_DOB;
+	std::string USER_ADDRESS;
+	std::string USER_PASSWORD;
+	std::string	USER_REG_DATE;
+	Skills* USER_SKILLS;
+};

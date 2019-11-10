@@ -1,4 +1,5 @@
-﻿  main.cpp
-  User.cpp
+﻿  User.cpp
+  main.cpp
   Generating Code...
-  Yellow-Pages.vcxproj -> C:\Users\Dania\source\repos\DanialHanif\Yellow-Pages\x64\Debug\Yellow-Pages.exe
+C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(208,59): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+  Yellow-Pages.vcxproj -> C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\x64\Debug\Yellow-Pages.exe

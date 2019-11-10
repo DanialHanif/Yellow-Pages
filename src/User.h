@@ -12,7 +12,6 @@ class User {
     protected:
 
 		UserData* userData;
-		Skills* skills;
 		
 
     public:
@@ -27,6 +26,8 @@ class User {
         std::string getStreetAddress();
         std::string getPassword();
         std::string getRegistrationDate();
+		std::string hexEncodeInfo(std::string const&);
+		std::string getSkillsStringForm();
         Skills* getSkills();
 
         void setup();
@@ -37,9 +38,11 @@ class User {
         void setDateOfBirth(std::string);
         void setStreetAddress(std::string);
         void setPassword(std::string);
-        void setRegistrationDate(std::string);
+        void setRegistrationDate();
         void addSkills(std::string, std::string, int);
         void deleteSkills(int&);
+		void saveInfoToDatabase();
+		void loadInfoFromDatabase(std::string&);
 
         void printInfo();
         

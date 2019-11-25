@@ -1,5 +1,4 @@
 ﻿  User.cpp
-  main.cpp
-  Generating Code...
-C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(208,59): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(414,59): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(247): warning C4715: 'User::loadInfoFromDatabase': not all control paths return a value
   Yellow-Pages.vcxproj -> C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\x64\Debug\Yellow-Pages.exe

@@ -1,5 +1,10 @@
 ﻿  main.cpp
   User.cpp
+C:\Users\Dania\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(204,24): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Dania\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(226,130): warning C4996: 'ctime': This function or variable may be unsafe. Consider using ctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\time.h(476): message : see declaration of 'ctime'
   Generating Code...
+C:\Users\Dania\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\src\User.cpp(355,59): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+User.obj : error LNK2019: unresolved external symbol "public: void __thiscall User::checkValidInput(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > &)" (?checkValidInput@User@@QAEXAAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z) referenced in function "public: void __thiscall User::setup(void)" (?setup@User@@QAEXXZ)
 MSVCRTD.lib(exe_winmain.obj) : error LNK2019: unresolved external symbol _WinMain@16 referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
-C:\Users\Dan\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\Debug\Yellow-Pages.exe : fatal error LNK1120: 1 unresolved externals
+C:\Users\Dania\OneDrive - student.ums.edu.my\Documents\GitHub\Yellow-Pages\Debug\Yellow-Pages.exe : fatal error LNK1120: 2 unresolved externals

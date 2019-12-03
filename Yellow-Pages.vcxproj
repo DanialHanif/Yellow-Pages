@@ -99,9 +99,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Management.cpp" />
     <ClCompile Include="src\User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Management.h" />
     <ClInclude Include="src\Nodes.h" />
     <ClInclude Include="src\User.h" />
   </ItemGroup>

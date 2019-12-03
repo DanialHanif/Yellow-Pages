@@ -20,6 +20,7 @@ class Management {
 
 		Management();
 
+
 		void loadUsersFromDB();
 
 		void loginMenu();

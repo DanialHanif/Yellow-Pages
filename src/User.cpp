@@ -15,6 +15,7 @@
     User::User(){
 
 		this->userData = new UserData;
+		this->userData->isAdmin = false;
 		this->userData->USER_ADDRESS = "";
 		this->userData->USER_DOB = "";
 		this->userData->USER_EMAIL = "";
@@ -25,6 +26,7 @@
 		this->userData->USER_REG_DATE = "";
 		this->userData->USER_SKILLS = NULL;
 
+		initialisation();
 
     }
 
@@ -45,7 +47,7 @@
 		while (true) {
 			if (userData->USER_SKILLS == NULL) { return "[]"; }
 			else {
-				skillsstring << cur->name + ";" + cur->description + ";" + std::to_string(cur->level);
+				skillsstring << cur->SKILL_NAME + ";" + cur->SKILL_DESCRIPTION + ";" + std::to_string(cur->SKILL_LEVEL);
 
 				if (cur->next == NULL) {
 					skillsstring << "]";
@@ -155,7 +157,7 @@
 		while (std::getline(infile, info)) {
 
 			info = decodeInfo(info);
-			position = info.rfind(user_pass, position);
+			position = info.rfind(user_pass, info.length());
 			if (position == std::string::npos) {
 				std::cout << "Invalid account details entered!" << std::endl;
 				return false;
@@ -285,17 +287,17 @@
 	void User::addSkills(std::string name, std::string description, int level){
 
 		Skills* newSkill = new Skills;
-		newSkill->id = 0;
-		newSkill->name = name;
-		newSkill->description = description;
-		newSkill->level = level;
+		newSkill->SKILL_ID = 0;
+		newSkill->SKILL_NAME = name;
+		newSkill->SKILL_DESCRIPTION = description;
+		newSkill->SKILL_LEVEL = level;
 		newSkill->next = NULL;
 	
 		Skills* cur = userData->USER_SKILLS;
 		while (true) {
 			//check if first skill is empty
-			if (cur == NULL) { userData->USER_SKILLS = newSkill; newSkill->id = 1; return; }
-			else if (cur->next == NULL) {  cur->next = newSkill; newSkill->id = (cur->id) + 1; return; }//check if there is next skill
+			if (cur == NULL) { userData->USER_SKILLS = newSkill; newSkill->SKILL_ID = 1; return; }
+			else if (cur->next == NULL) {  cur->next = newSkill; newSkill->SKILL_ID = (cur->SKILL_ID) + 1; return; }//check if there is next skill
 			
 			else cur = cur->next;
 		}
@@ -307,15 +309,15 @@
 		Skills* prev;
 		bool found = false;
 		while (cur != NULL && !found ) {
-			if (cur->id == id) found = true;
+			if (cur->SKILL_ID == id) found = true;
 			else prev = cur; cur = cur->next;
 		}
 		if (cur == NULL) { std::cout << "No skill with the selected number is found!" << std::endl; return; }
-		else if (cur->id == id) {
+		else if (cur->SKILL_ID == id) {
 			if (userData->USER_SKILLS == cur) { userData->USER_SKILLS = cur->next; delete cur; }
 			else { prev->next = cur->next; delete cur; }
 			while (prev->next != NULL) {
-				--(prev->next->id);//decrements the skill id after deletion
+				--(prev->next->SKILL_ID);//decrements the skill id after deletion
 				prev = prev->next;
 			}
 		}
@@ -329,12 +331,12 @@
 		Skills* prev;
 		bool found = false;
 		while (cur != NULL && !found) {
-			if (cur->id == id) found = true;
+			if (cur->SKILL_ID == id) found = true;
 			else prev = cur; cur = cur->next;
 		}
 		if (cur == NULL) { std::cout << "No skill with the selected number is found!" << std::endl; return;  }
-		else if (cur->id == id) {
-			cur->name = name; cur->description = description; cur->level = level; return;
+		else if (cur->SKILL_ID == id) {
+			cur->SKILL_NAME = name; cur->SKILL_DESCRIPTION = description; cur->SKILL_LEVEL = level; return;
 		}
 
 		else std::cout << "No skill with the selected number is found!" << std::endl; return;
@@ -356,7 +358,7 @@
 		Skills* cur = getUserData()->USER_SKILLS;
 		while (true) {
 			if (getUserData()->USER_SKILLS == NULL) { std::cout << ("No skills found!");  return; }
-			else { std::cout << "\t" << cur->id << ".Name: " << cur->name << "\n \t  Description: " << cur->description << "\n \t  Level: " << cur->level << std::endl;
+			else { std::cout << "\t" << cur->SKILL_ID << ".Name: " << cur->SKILL_NAME << "\n \t  Description: " << cur->SKILL_DESCRIPTION << "\n \t  Level: " << cur->SKILL_LEVEL << std::endl;
 			
 			if (cur->next == NULL) {
 				std::cout << std::endl;  return;
@@ -424,5 +426,4 @@
 		else saveInfoToDatabase(); return;
 
     }
-
 

@@ -180,6 +180,7 @@ int main() {
 				}
 				break;
 			}
+			break;
 		}
 
 		//register
@@ -188,12 +189,11 @@ int main() {
 			std::cin.clear();
 			std::cin.ignore();
 			User a;
-			std::string user_n, passw;
 
 			a.setup();
 			bool loggedin = false;
 
-			std::string credentials = user_n + ";" + passw;
+			std::string credentials = a.getUsername() + ";" + a.getPassword();
 			loggedin = a.loadInfoFromDatabase(credentials);
 			if (loggedin) {
 				while (loggedin) {
@@ -201,13 +201,14 @@ int main() {
 				}
 				break;
 			}
+			break;
 		}
 
 			  //exit
 		case '3': {
 
 			system("exit");
-
+			break;
 		}
 
 			  //when invalid input

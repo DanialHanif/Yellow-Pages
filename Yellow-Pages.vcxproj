@@ -102,7 +102,6 @@
     <ClCompile Include="src\User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Management.h" />
     <ClInclude Include="src\Nodes.h" />
     <ClInclude Include="src\User.h" />
   </ItemGroup>

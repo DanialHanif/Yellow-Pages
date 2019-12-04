@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Management.cpp" />
+    <ClCompile Include="src\User.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Management.h" />
+    <ClInclude Include="src\Nodes.h" />
+    <ClInclude Include="src\User.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{FAA8E976-9CBA-47E5-A74E-A7EC7F427620}</ProjectGuid>
@@ -97,16 +107,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Management.cpp" />
-    <ClCompile Include="src\User.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Management.h" />
-    <ClInclude Include="src\Nodes.h" />
-    <ClInclude Include="src\User.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

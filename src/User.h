@@ -34,6 +34,7 @@ class User {
         Skills* getSkills();
 		UserData* getUserData();
 
+		bool login(std::string&);
         void setup();
 		void generateID();
         void setUsername(std::string);
@@ -47,7 +48,7 @@ class User {
         void deleteSkills(int&);
 		void updateSkills(int&, std::string, std::string, int);
 		void saveInfoToDatabase();
-		bool loadInfoFromDatabase(std::string&);
+		void loadInfoFromDatabase(std::string&);
 		void checkValidInput(std::string&);
         void printInfo();
         

@@ -26,7 +26,7 @@
 		this->userData->USER_REG_DATE = "";
 		this->userData->USER_SKILLS = NULL;
 
-		initialisation();
+		loadInfoFromDatabase();
 
     }
 
@@ -148,9 +148,12 @@
 	}
 
 
-	bool User::loadInfoFromDatabase(std::string& user_pass) {
+	bool User::login(std::string& user_pass) {
 
-		std::string info;
+
+
+
+		/*std::string info;
 		std::ifstream infile("userDB.dat");
 		std::string::size_type position = 0;
 		//check if user_pass matches in DB
@@ -233,6 +236,106 @@
 					for (int i = 0; i < secondTrimmedParts.size(); i=i+3) {
 
 						addSkills(secondTrimmedParts.at(i), secondTrimmedParts.at(i+1), stoi(secondTrimmedParts.at(i+2)));
+
+					}
+
+					return true;
+					break;
+
+				}
+
+			}
+
+
+		}*/
+
+	}
+
+	void User::loadInfoFromDatabase(std::string& user_pass) {
+
+		std::string info;
+		std::ifstream infile("userDB.dat");
+		std::string::size_type position = 0;
+		//check if user_pass matches in DB
+		while (std::getline(infile, info)) {
+
+			info = decodeInfo(info);
+			position = info.rfind(user_pass, info.length());
+			if (position == std::string::npos) {
+				std::cout << "Invalid account details entered!" << std::endl;
+				return false;
+			}
+			else if (info.rfind(user_pass) != std::string::npos) {
+
+				//trim first part of info
+				std::string::size_type endOfFirstPart = 0;
+				endOfFirstPart = info.find("}", endOfFirstPart);
+				std::string firstTrimmedInfo;
+				firstTrimmedInfo = info.substr(1, endOfFirstPart - 1);
+
+				//trim second part of info
+				std::string::size_type firstOfSecondPart = 0;
+				firstOfSecondPart = info.find("[", firstOfSecondPart);
+				std::string secondTrimmedInfo;
+				secondTrimmedInfo = info.substr(firstOfSecondPart + 1, (info.length() - firstOfSecondPart - 2));
+
+				bool finish = false;
+				position = 0;
+				std::vector<std::string> firstTrimmedParts, secondTrimmedParts;
+				//parse first part
+				while (!finish) {
+
+					std::string::size_type start = position;
+					position = firstTrimmedInfo.find(";", position);
+					if (position == std::string::npos) {
+						position = firstTrimmedInfo.length();
+						finish = true;
+					}
+					firstTrimmedParts.push_back(firstTrimmedInfo.substr(start, position - start));
+					position++;
+
+				}
+
+				position = 0;
+				finish = false;
+				//parse second part
+				while (!finish) {
+
+					std::string::size_type start = position;
+					position = secondTrimmedInfo.find(";", position);
+					if (position == std::string::npos) {
+						position = secondTrimmedInfo.length();
+						finish = true;
+					}
+					secondTrimmedParts.push_back(secondTrimmedInfo.substr(start, position - start));
+					position++;
+
+				}
+
+				if ((firstTrimmedParts.size() == 8)) {
+
+					userData->USER_ID = stoi(firstTrimmedParts.at(0));
+					userData->USER_NAME = firstTrimmedParts.at(1);
+					userData->USER_PASSWORD = firstTrimmedParts.at(2);
+					userData->USER_FULL_NAME = firstTrimmedParts.at(3);
+					userData->USER_EMAIL = firstTrimmedParts.at(4);
+					userData->USER_DOB = firstTrimmedParts.at(5);
+					userData->USER_ADDRESS = firstTrimmedParts.at(6);
+					userData->USER_REG_DATE = firstTrimmedParts.at(7);
+
+				}
+
+				if ((secondTrimmedParts.size() <= 1)) {
+
+					return true;
+					break;
+
+				}
+				else {
+
+					for (int i = 0; i < secondTrimmedParts.size(); i = i + 3) {
+
+						addSkills(secondTrimmedParts.at(i), secondTrimmedParts.at(i + 1), stoi(secondTrimmedParts.at(i + 2)));
 
 					}
 

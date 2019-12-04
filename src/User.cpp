@@ -1,3 +1,5 @@
+//MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
+
 #include "User.h"
 #include <ctime>
 #include <iostream>
@@ -5,10 +7,15 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <cstddef>
+#include <locale>
+#include <codecvt>
 
     User::User(){
 
 		this->userData = new UserData;
+		this->userData->isAdmin = false;
 		this->userData->USER_ADDRESS = "";
 		this->userData->USER_DOB = "";
 		this->userData->USER_EMAIL = "";
@@ -19,6 +26,7 @@
 		this->userData->USER_REG_DATE = "";
 		this->userData->USER_SKILLS = NULL;
 
+		initialisation();
 
     }
 
@@ -39,7 +47,7 @@
 		while (true) {
 			if (userData->USER_SKILLS == NULL) { return "[]"; }
 			else {
-				skillsstring << cur->name + ";" + cur->description + ";" + std::to_string(cur->level);
+				skillsstring << cur->SKILL_NAME + ";" + cur->SKILL_DESCRIPTION + ";" + std::to_string(cur->SKILL_LEVEL);
 
 				if (cur->next == NULL) {
 					skillsstring << "]";
@@ -55,6 +63,7 @@
 	
 	}
     Skills* User::getSkills(){ return this->userData->USER_SKILLS; }
+    UserData* User::getUserData(){ return this->userData; }
 
 	std::string User::hexEncodeInfo(std::string const& info) {
 
@@ -68,23 +77,78 @@
 
 	}
 
+	std::string User::decodeInfo(std::string const& encodedInfo) {
+
+		static const char* const hexcharacters = "0123456789ABCDEF";
+		std::string decodedInfo;
+		size_t len = encodedInfo.length();
+		if (len & 1) {
+
+			return decodedInfo;
+		}
+
+		decodedInfo.reserve(len / 2);
+		for (size_t i = 0; i < len; i += 2) {
+
+			char a = encodedInfo[i];
+			char b = encodedInfo[i + 1];
+
+			const char* p = std::lower_bound(hexcharacters, hexcharacters + 16, a);
+			const char* q = std::lower_bound(hexcharacters, hexcharacters + 16, b);
+
+			if (*q != b || *p != a) {
+				return decodedInfo;
+
+			}
+
+			decodedInfo.push_back(static_cast<char>(((p - hexcharacters) << 4) | (q - hexcharacters)));
+
+		}
+
+		return decodedInfo;
+
+	}
+
 	void User::saveInfoToDatabase() {
 
-		std::string firstpart = "{" + std::to_string(getID()) + ";" + getUsername() + ";" + getPassword() + ";" + getFullName() + ";" + getEmailAddress() + ";" + getDateOfBirth() + ";" + getStreetAddress() + ";" + getRegistrationDate() + ";" + "}";
+		std::string firstpart = "{" + std::to_string(getID()) + ";" + getUsername() + ";" + getPassword() + ";" + getFullName() + ";" + getEmailAddress() + ";" + getDateOfBirth() + ";" + getStreetAddress() + ";" + getRegistrationDate() + "}";
 		std::string skillpart = getSkillsStringForm();
 		std::string info = firstpart + skillpart;
+		std::string existing;
+		std::string decoded;
+		std::string ID;
 
 		std::ofstream file;
-		file.open("userDB.dat");
+		std::ifstream infile("userDB.dat");
+		std::string::size_type position = 0;
+		
+		while (std::getline(infile, existing)) {
+			decoded = decodeInfo(existing);
+			position = decoded.find(";");
+			ID = hexEncodeInfo(info).substr(0, position);
+			if (position != std::string::npos) {
+				if (existing.find(ID) != std::string::npos) {
+					existing.replace(0, existing.length(), "");
+					file.open("userDB.dat", std::ios_base::app);
+					file << hexEncodeInfo(info) << std::endl;
+					file.close();
+					std::cout << std::endl << "User data is saved!" << std::endl;
+					return;
+				}
+			}
+
+		}
+		file.open("userDB.dat", std::ios_base::app);
 		file << hexEncodeInfo(info) << std::endl;
 		file.close();
-		std::cout << "User data is saved!" << std::endl;
+		std::cout << std::endl << "User data is saved!" << std::endl;
 		return;
 
 
 	}
 
-	void User::loadInfoFromDatabase(std::string& user_pass) {
+
+	bool User::loadInfoFromDatabase(std::string& user_pass) {
 
 		std::string info;
 		std::ifstream infile("userDB.dat");
@@ -92,24 +156,25 @@
 		//check if user_pass matches in DB
 		while (std::getline(infile, info)) {
 
-			position = info.find(user_pass, position);
-			if (position == std::string::npos && !std::cin) {
+			info = decodeInfo(info);
+			position = info.rfind(user_pass, info.length());
+			if (position == std::string::npos) {
 				std::cout << "Invalid account details entered!" << std::endl;
-				return;
+				return false;
 			}
-			else if (position > 0 && position < std::string::npos) {
+			else if (info.rfind(user_pass) != std::string::npos) {
 
 				//trim first part of info
-				std::string::size_type endOfFirstPart;
+				std::string::size_type endOfFirstPart = 0;
 				endOfFirstPart = info.find("}", endOfFirstPart);
 				std::string firstTrimmedInfo;
-				firstTrimmedInfo = info.substr(1, endOfFirstPart);
+				firstTrimmedInfo = info.substr(1, endOfFirstPart-1);
 
 				//trim second part of info
-				std::string::size_type firstOfSecondPart;
+				std::string::size_type firstOfSecondPart = 0;
 				firstOfSecondPart = info.find("[", firstOfSecondPart);
 				std::string secondTrimmedInfo;
-				secondTrimmedInfo = info.substr(firstOfSecondPart, info.length() - 2);
+				secondTrimmedInfo = info.substr(firstOfSecondPart+1, (info.length()-firstOfSecondPart-2));
 
 				bool finish = false;
 				position = 0;
@@ -129,6 +194,7 @@
 				}
 
 				position = 0;
+				finish = false;
 				//parse second part
 				while (!finish) {
 
@@ -158,56 +224,49 @@
 
 				if ((secondTrimmedParts.size() <= 1)) {
 
-					return;
+					return true;
+					break;
 
 				}
 				else {
 				
-					int i = 0;
-					while (true) {
+					for (int i = 0; i < secondTrimmedParts.size(); i=i+3) {
 
-						addSkills(secondTrimmedParts.at(i), secondTrimmedParts.at(i + 1), stoi(secondTrimmedParts.at(i + 2)));
-						i++;//todo
+						addSkills(secondTrimmedParts.at(i), secondTrimmedParts.at(i+1), stoi(secondTrimmedParts.at(i+2)));
 
 					}
+
+					return true;
+					break;
 
 				}
 
 			}
 
-		}
 
+		}
 
 	}
 
-	void User::setID(int USER_ID) { this->userData->USER_ID = USER_ID; }
-    void User::setUsername(std::string username){ this->userData->USER_NAME = username; }
+	void User::generateID() { time_t currentTime = time(0);  this->userData->USER_ID = currentTime; }
+	void User::setUsername(std::string username) { this->userData->USER_NAME = username; checkValidInput(userData->USER_NAME); }
     void User::setFullName(std::string fullName){ this->userData->USER_FULL_NAME = fullName; }
     void User::setEmailAddress(std::string emailAddress){ this->userData->USER_EMAIL = emailAddress; }
-    void User::setDateOfBirth(std::string dateOfBirth){ this->userData->USER_DOB = dateOfBirth; }
-    void User::setStreetAddress(std::string streetAddress){ this->userData->USER_ADDRESS = streetAddress; }
-    void User::setPassword(std::string password){ this->userData->USER_PASSWORD = password; }
-    void User::setRegistrationDate(){ time_t currentTime = time(0); char* dt = ctime(&currentTime); userData->USER_REG_DATE = dt;}
-	
-	void User::addSkills(std::string name, std::string description, int level){
+    void User::setDateOfBirth(std::wstring& dateOfBirth){ 
+		
+		static const std::wstring dateTimeFormat{ L"%d:%m:%Y" };
+		std::wistringstream ss{ dateOfBirth };
+		std::tm dt;
+		ss >> std::get_time(&dt, dateTimeFormat.c_str());
 
-		Skills* newSkill = new Skills;
-		newSkill->id = 0;
-		newSkill->name = name;
-		newSkill->description = description;
-		newSkill->level = level;
-		newSkill->next = NULL;
-	
-		Skills* cur = userData->USER_SKILLS;
-		while (true) {
-			//check if first skill is empty
-			if (cur == NULL) { userData->USER_SKILLS = newSkill; newSkill->id = 1; return; }
-			else if (cur->next == NULL) {  cur->next = newSkill; newSkill->id = (cur->id) + 1; return; }//check if there is next skill
-			
-			else cur = cur->next;
-		}
-	
+		this->userData->USER_DOB = std::mktime(&dt);
 	}
+    void User::setStreetAddress(std::string streetAddress){ this->userData->USER_ADDRESS = streetAddress; }
+	void User::setPassword(std::string password) { this->userData->USER_PASSWORD = password; checkValidInput(userData->USER_PASSWORD); }
+    void User::setRegistrationDate(){ time_t currentTime = time(0); char* dt = ctime(&currentTime); userData->USER_REG_DATE = dt;}
+
+
+	
 
 	void checkSkillsFields(std::string& n, std::string& d, int& l) {
 		if ((n.empty() == true) || (d.empty() == true) || ((l > 5) || (l < 0))) {
@@ -225,32 +284,69 @@
 		}
 	}
 
+	void User::addSkills(std::string name, std::string description, int level){
+
+		Skills* newSkill = new Skills;
+		newSkill->SKILL_ID = 0;
+		newSkill->SKILL_NAME = name;
+		newSkill->SKILL_DESCRIPTION = description;
+		newSkill->SKILL_LEVEL = level;
+		newSkill->next = NULL;
+	
+		Skills* cur = userData->USER_SKILLS;
+		while (true) {
+			//check if first skill is empty
+			if (cur == NULL) { userData->USER_SKILLS = newSkill; newSkill->SKILL_ID = 1; return; }
+			else if (cur->next == NULL) {  cur->next = newSkill; newSkill->SKILL_ID = (cur->SKILL_ID) + 1; return; }//check if there is next skill
+			
+			else cur = cur->next;
+		}
+	
+	}
     void User::deleteSkills(int& id){
 	
 		Skills* cur = userData->USER_SKILLS;
 		Skills* prev;
 		bool found = false;
 		while (cur != NULL && !found ) {
-			if (cur->id == id) found = true;
+			if (cur->SKILL_ID == id) found = true;
 			else prev = cur; cur = cur->next;
 		}
-		if (cur == NULL) { std::cout << "No skill with the selected number is found!" << std::endl; }
-		else if (cur->id == id) {
+		if (cur == NULL) { std::cout << "No skill with the selected number is found!" << std::endl; return; }
+		else if (cur->SKILL_ID == id) {
 			if (userData->USER_SKILLS == cur) { userData->USER_SKILLS = cur->next; delete cur; }
 			else { prev->next = cur->next; delete cur; }
 			while (prev->next != NULL) {
-				--(prev->next->id);//decrements the skill id after deletion
+				--(prev->next->SKILL_ID);//decrements the skill id after deletion
 				prev = prev->next;
 			}
 		}
-		else { std::cout << "No skill with the selected number is found!" << std::endl; }
+		else { std::cout << "No skill with the selected number is found!" << std::endl; return; }
 	
+	}
+
+	void User::updateSkills(int& id, std::string name, std::string description, int level) {
+
+		Skills* cur = userData->USER_SKILLS;
+		Skills* prev;
+		bool found = false;
+		while (cur != NULL && !found) {
+			if (cur->SKILL_ID == id) found = true;
+			else prev = cur; cur = cur->next;
+		}
+		if (cur == NULL) { std::cout << "No skill with the selected number is found!" << std::endl; return;  }
+		else if (cur->SKILL_ID == id) {
+			cur->SKILL_NAME = name; cur->SKILL_DESCRIPTION = description; cur->SKILL_LEVEL = level; return;
+		}
+
+		else std::cout << "No skill with the selected number is found!" << std::endl; return;
 	}
 
     void User::printInfo(){
 
 		std::cout << std::endl;
 		std::cout << "============ Profile Info ============" << std::endl;
+		std::cout << "User ID:  " << getID() << std::endl;
         std::cout << "Full Name:  " << getFullName() << std::endl;
         std::cout << "Email Address: " << getEmailAddress() << std::endl;
         std::cout << "Date of Birth: " << getDateOfBirth() << std::endl;
@@ -259,10 +355,10 @@
         std::cout << "Registration Date: " << getRegistrationDate() << std::endl;
 		std::cout << "Skills: " << std::endl;
 
-		Skills* cur = userData->USER_SKILLS;
+		Skills* cur = getUserData()->USER_SKILLS;
 		while (true) {
-			if (userData->USER_SKILLS == NULL) { std::cout << ("No skills found!");  return; }
-			else { std::cout << cur->id << ". " << cur->name << "\t Description:" << cur->description << "\t" << "Level: " << cur->level << std::endl;
+			if (getUserData()->USER_SKILLS == NULL) { std::cout << ("No skills found!");  return; }
+			else { std::cout << "\t" << cur->SKILL_ID << ".Name: " << cur->SKILL_NAME << "\n \t  Description: " << cur->SKILL_DESCRIPTION << "\n \t  Level: " << cur->SKILL_LEVEL << std::endl;
 			
 			if (cur->next == NULL) {
 				std::cout << std::endl;  return;
@@ -271,22 +367,37 @@
 			else cur = cur->next;}
 		}
         
+		std::cout << "============ Profile Info ============" << std::endl;
 
     }
 
-	
+	void User::checkValidInput(std::string& s) {
+
+		size_t whitelistcharacters = s.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-_");
+
+		if ((whitelistcharacters != std::string::npos) || s == "") {
+
+			std::cout << "Error! Please re-enter input with valid characters! Press enter to continue." << std::endl;
+			std::cout << "Re-enter input: "; std::getline(std::cin, s);
+			checkValidInput(s);
+		}
+
+		else return;
+
+	}
 
 	
     void User::setup(){
-
+		generateID();
         std::cout << "Fill in the details:" << std::endl;
-        std::cout << "Username: "; std::cin >> userData->USER_NAME; std::cin.ignore();
+		std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, userData->USER_NAME);
+		checkValidInput(userData->USER_NAME);
         std::cout << "Full Name:  "; std::getline(std::cin, userData->USER_FULL_NAME);
-        std::cout << "Email Address: "; std::cin >> userData->USER_EMAIL; std::cin.ignore();
-        std::cout << "Date of Birth: "; std::getline(std::cin, userData->USER_DOB);
+        std::cout << "Email Address: "; std::getline(std::cin, userData->USER_EMAIL);
+		std::cout << "Date of Birth (Day:Month:Year): "; std::getline(std::cin, userData->USER_DOB); std::wstring date = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(userData->USER_DOB); setDateOfBirth(date);
         std::cout << "Street Address: "; std::getline(std::cin, userData->USER_ADDRESS);
-        std::cout << "Password: "; std::cin >> userData->USER_PASSWORD; std::cin.ignore();
-        
+        std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, userData->USER_PASSWORD);
+		checkValidInput(userData->USER_PASSWORD);
 		setRegistrationDate();
 
         std::cout << "Please add a Skill: "; 
@@ -307,10 +418,12 @@
 			checkSkillsFields(name, description, level);
 
 			addSkills(name, description, level);
+
+			
+			saveInfoToDatabase();
 		}
 
-		else return;
+		else saveInfoToDatabase(); return;
 
     }
-
 

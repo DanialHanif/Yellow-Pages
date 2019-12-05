@@ -20,13 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Management.cpp" />
-    <ClCompile Include="src\User.cpp" />
+    <ClCompile Include="src\Payment.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Management.h" />
-    <ClInclude Include="src\Nodes.h" />
-    <ClInclude Include="src\User.h" />
+    <ClInclude Include="src\Payment.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

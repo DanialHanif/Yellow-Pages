@@ -1,10 +1,8 @@
-#include<iostream>
-#include <bits/stdc++.h> 
-#include <windows.h>
+#include "Payment.h"
 
 using namespace std;
 
-void Description()
+void Payment::Description()
 {
 	cout<<"\n\t   _____________________________________\n";
 	cout<<"\t  |                                     |\n";
@@ -17,7 +15,7 @@ void Description()
 	system("pause");
 	system("cls");
 }
-void OnlineBanking()
+void Payment::OnlineBanking()
 {
 	cout<<"\nWhich internet banking do you prefer?\n\t1.Maybank\n\t2.CIMB\n\t3.Public Bank\n\t"
 	<<"4.Hong Leong Bank\n\t5.RHB\n\t6.Bank Islam\n\t7.AmBank\n\t8.Standard Chartered Bank"
@@ -160,7 +158,7 @@ void OnlineBanking()
 	cout<<endl<<endl;
 }
 
-void payment()
+void Payment::payment()
 {
 	cout<<"\n***************************************************************************************************\n";
 	cout<<"\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
@@ -233,7 +231,7 @@ void payment()
 	
 }
 
-void viewDeals(int deal)
+void Payment::viewDeals(int deal)
 {
 	switch(deal)
 	{
@@ -340,23 +338,3 @@ void viewDeals(int deal)
 		viewDeals(deal);  //using recursion
 }
 
-int main()
-{
-	Description();
-	
-	cout<<"\n****************************************** List of deals ******************************************\n"<<endl;
-	cout<<"\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
-	cout<<"***************************************************************************************************\n\n";
-	cout<<"___________________________________________________________________________________________________\n\n";
-	cout<<"\t\tInsert a number of deals you wants to know more , (1/2/3)\n\t\tInsert any other number to continue or cancel the payment : ";
-	
-	int deals;
-	cin>>deals;
-	cout<<"___________________________________________________________________________________________________\n\n";
-	viewDeals(deals);
-	cout<<"\n\n___________________________________________________________________________________________________\n";
-	cout<<"___________________________________________________________________________________________________\n\n";
-	cout<<"\t\tThank you for dealing with us!!  ^_^\n\n\n";
-	
-	return 0;
-}

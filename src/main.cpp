@@ -5,7 +5,7 @@
 #include <codecvt>
 #include "User.h"
 
-void loggedInMenu(User& a, bool& loggedin) {
+/*void loggedInMenu(User& a, bool& loggedin) {
 
 	a.printInfo();
 	char i;
@@ -219,4 +219,31 @@ int main() {
 		
 	}
 
+}*/
+
+#include "Payment.h"
+
+using namespace std;
+
+int main()
+{
+	Payment a;
+
+	a.Description();
+
+	cout << "\n****************************************** List of deals ******************************************\n" << endl;
+	cout << "\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
+	cout << "***************************************************************************************************\n\n";
+	cout << "___________________________________________________________________________________________________\n\n";
+	cout << "\t\tInsert a number of deals you wants to know more , (1/2/3)\n\t\tInsert any other number to continue or cancel the payment : ";
+
+	int deals;
+	cin >> deals;
+	cout << "___________________________________________________________________________________________________\n\n";
+	a.viewDeals(deals);
+	cout << "\n\n___________________________________________________________________________________________________\n";
+	cout << "___________________________________________________________________________________________________\n\n";
+	cout << "\t\tThank you for dealing with us!!  ^_^\n\n\n";
+
+	return 0;
 }

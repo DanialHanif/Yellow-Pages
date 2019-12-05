@@ -107,3 +107,18 @@ struct ServiceList {
 	ServiceList* next;
 
 };
+
+struct Invoice {
+
+	std::string INVOICE_NUMBER;
+	Deal* INVOICE_DEALS;
+
+};
+
+
+struct Deal {
+	
+	std::string DEAL_NAME;
+	double DEAL_PRICE;
+
+};

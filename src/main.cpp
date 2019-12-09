@@ -1,9 +1,8 @@
 //MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
 
 #include <iostream>
-#include <locale>
-#include <codecvt>
 #include "User.h"
+
 
 /*void loggedInMenu(User& a, bool& loggedin) {
 
@@ -221,11 +220,7 @@ int main() {
 
 }*/
 
-#include "Payment.h"
-
-using namespace std;
-
-int main()
+/*int main()
 {
 	Payment a;
 
@@ -246,4 +241,68 @@ int main()
 	cout << "\t\tThank you for dealing with us!!  ^_^\n\n\n";
 
 	return 0;
+}*/
+
+void MainMenu();
+
+int main() {
+
+	MainMenu();
+
+
+	
+
+	return 0;
+}
+
+void MainMenu() {
+
+	
+	int choice;
+
+	do {
+		
+		std::cout << "+========================================================================+" << std::endl;
+		std::cout << "+                     Welcome to Yellow Pages system!                    +" << std::endl;
+		std::cout << "+    The yellow pages are any telephone directory of businesses          +" << std::endl;
+		std::cout << "+    organised by category rather than alphabetically by business name   +" << std::endl;
+		std::cout << "+    and in which advertising is sold.                                   +" << std::endl;
+		std::cout << "+========================================================================+" << std::endl;
+		std::cout << "1) Register" << std::endl;
+		std::cout << "2) Login" << std::endl;
+		std::cout << "3) Login as Guest" << std::endl;
+		std::cout << "0) Exit" << std::endl;
+
+		std::cin >> choice;
+		switch (choice)
+		{
+		case 0:
+			break;
+
+		case 1:
+			{
+			User a;
+			a.setup();
+			a.printInfo();
+			break; 
+		}
+
+		case 2:
+			{
+			User a;
+			std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
+			break;
+		}
+		case 3:
+			/*User a;
+			a.loginGuest();*/
+			break;
+
+		default:
+			std::cout << "Please enter a valid choice!\n";
+			system("pause");
+			system("cls");
+			break;
+		}
+	} while (choice);
 }

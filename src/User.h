@@ -1,8 +1,14 @@
 //MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
 
-#include <iostream>
 #include <vector>
-#include <string>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
+#include <algorithm>
+#include <cstddef>
+#include <locale>
+#include <codecvt>
 #include "Nodes.h"
 
 #ifndef USER_H
@@ -13,14 +19,16 @@ class User {
 
     protected:
 
-		UserData* userData;
-		
+        UserList* usersList;
+        UserList* headerUserList;
+        UserList* currentUserList;
+        UserData* currentUser;
 
     public:
 
         User();
 
-		int getID();
+		/*int getID();
         std::string getUsername();
         std::string getFullName();
         std::string getEmailAddress();
@@ -30,26 +38,29 @@ class User {
         std::string getRegistrationDate();
 		std::string hexEncodeInfo(std::string const&);
 		std::string decodeInfo(std::string const&);
-		std::string getSkillsStringForm();
-        Skills* getSkills();
+		std::string getSkillsStringForm();*/
 		UserData* getUserData();
+		UserList* getUserList();
 
-		bool login(std::string&);
+		bool login();
         void setup();
-		void generateID();
-        void setUsername(std::string);
+		time_t generateID();
+        /*void setUsername(std::string);
         void setFullName(std::string);
         void setEmailAddress(std::string);
         void setDateOfBirth(std::wstring&);
         void setStreetAddress(std::string);
-        void setPassword(std::string);
-        void setRegistrationDate();
-        void addSkills(std::string, std::string, int);
+        void setPassword(std::string);*/
+        std::string registrationDate();
+        void addUserFromDBToList(std::vector<std::string>);
+        void addUserToList(UserData*);
+        /*void addPostings(std::string, std::string, int);
         void deleteSkills(int&);
-		void updateSkills(int&, std::string, std::string, int);
-		void saveInfoToDatabase();
-		void loadInfoFromDatabase(std::string&);
+		void updateSkills(int&, std::string, std::string, int);*/
+		void saveUserInfoToDatabase();
+		void loadUserInfoFromDatabaseToList();
 		void checkValidInput(std::string&);
+		void checkIfUserExist(std::string&);
         void printInfo();
         
 

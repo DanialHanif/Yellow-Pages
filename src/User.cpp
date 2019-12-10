@@ -1,6 +1,7 @@
 //MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
 
 #include "User.h"
+#include "Payment.h"
 
 
     User::User(){
@@ -23,8 +24,9 @@
     std::string User::getPassword(){ return this->userData->USER_PASSWORD; }
     std::string User::getRegistrationDate(){ return this->userData->USER_REG_DATE; }*/
 
-    UserData* User::getUserData(){ return this->currentUserList->user; }
-    UserList* User::getUserList(){ return this->headerUserList; }
+    UserData* User::getUserData(){ return this->currentUser; }
+    UserList* User::getUsersList(){ return this->headerUserList; }
+
 
 	/*std::string User::hexEncodeInfo(std::string const& info) {
 
@@ -276,7 +278,7 @@
 
 
 
-	void checkSkillsFields(std::string& n, std::string& d, int& l) {
+	/*void checkSkillsFields(std::string& n, std::string& d, int& l) {
 		if ((n.empty() == true) || (d.empty() == true) || ((l > 5) || (l < 0))) {
 			std::cout << "Input Error! Please enter valid input!"; 	std::cin.ignore();
 			std::cout << "Skill name: "; std::getline(std::cin, n); std::cin.ignore();
@@ -290,7 +292,7 @@
 
 			return;
 		}
-	}
+	}*/
 
 	void User::addUserFromDBToList(std::vector<std::string> userInfo) {
 
@@ -451,6 +453,7 @@
 		else return;
 	}
 
+	//void User::
 	
     void User::setup(){
 
@@ -477,7 +480,25 @@
 
 		while (true) {
 			std::getline(std::cin,employerState);
-			if (employerState == "y" || employerState == "Y") { newUser->user->isEmployer = 1; break; }
+			if (employerState == "y" || employerState == "Y") { 
+				std::cout << "Employer requires a subscription to be registered. Do you want to proceed?[y/N]";
+				
+				employerState = "";
+				std::cin >> employerState;
+				if (employerState == "y" || employerState == "Y") {
+					Payment payMenu;
+					if (payMenu.result() == true) {
+						newUser->user->isEmployer = 1; 
+						std::cin.ignore();
+						break;
+					}
+					else {
+						std::cout << "Payment is not successful. Returning back to menu.";
+						break;
+					}
+				}
+				
+			}
 			else if (employerState == "n" || employerState == "N") { newUser->user->isEmployer = 0; break; }
 			else { std::cout << "Invalid input! Please re-enter: "; }
 		}
@@ -513,3 +534,4 @@
 		return;
     }
 
+	  

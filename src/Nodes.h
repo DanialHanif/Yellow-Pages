@@ -52,6 +52,7 @@ struct ServiceData {
 
 struct DealData {
 
+	int DEAL_ID;
 	std::string DEAL_NAME;
 	std::string DEAL_DESCRIPTION;
 	//std::string DEAL_CATEGORY;

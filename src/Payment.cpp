@@ -2,6 +2,15 @@
 
 using namespace std;
 
+Payment::Payment() {
+	this->paid = false;
+	payment();
+}
+
+bool Payment::result() {
+	return paid;
+}
+
 void Payment::Description()
 {
 	cout<<"\n\t   _____________________________________\n";
@@ -155,6 +164,8 @@ void Payment::OnlineBanking()
 	cout<<"\n\n\t Insert your reference number : ";
 	int ref;
 	cin>>ref;
+	paid = true;
+	result();
 	cout<<endl<<endl;
 }
 

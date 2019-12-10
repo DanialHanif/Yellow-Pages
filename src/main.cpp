@@ -290,7 +290,22 @@ void MainMenu() {
 		case 2:
 			{
 			User a;
-			std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
+			//std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
+
+			if (a.login() == true) {
+
+				std::cout << "Login success!" << std::endl;
+
+				a.printInfo();
+				//comment
+
+				//UserData* user = a.getUserData;
+
+			}
+			else {
+				break;
+			}
+
 			break;
 		}
 		case 3:
@@ -306,3 +321,4 @@ void MainMenu() {
 		}
 	} while (choice);
 }
+

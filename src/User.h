@@ -40,7 +40,7 @@ class User {
 		std::string decodeInfo(std::string const&);
 		std::string getSkillsStringForm();*/
 		UserData* getUserData();
-		UserList* getUserList();
+		UserList* getUsersList();
 
 		bool login();
         void setup();

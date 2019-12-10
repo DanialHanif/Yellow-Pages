@@ -10,15 +10,17 @@ class Payment {
 
 	private:
 
+		bool paid;
 
 
 	public:
 
+		Payment();
 		void Description();
 		void OnlineBanking();
 		void payment();
 		void viewDeals(int deal);
-
+		bool result();
 
 };
 

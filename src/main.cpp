@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "User.h"
+#include "Company.h"
 
 
 /*void loggedInMenu(User& a, bool& loggedin) {
@@ -297,6 +298,9 @@ void MainMenu() {
 				std::cout << "Login success!" << std::endl;
 
 				a.viewCurrentUserInfo();
+				Company companyObject;
+				companyObject.addCompany(a.getUserData());
+				companyObject.searchCompany(a.getUserData());
 				//a.newMenu();
 				//UserData* user = a.getUserData;
 

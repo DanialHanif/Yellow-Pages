@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#pragma once
 
 
 /*static const char* const CATEGORY_LISTS[] = { "Computing", "Network & Communications", "Management", "Software",//0,1,2,3

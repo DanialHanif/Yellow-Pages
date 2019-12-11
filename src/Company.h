@@ -35,6 +35,9 @@ class Company {
 		void checkValidInputNumber(std::string&);
 		time_t generateID();
 		std::string registrationDate();
+		void viewCurrentCompanyInfo(CompanyData*);
+		void viewCompanyBrief(CompanyData*);
+		void editCurrentCompany(UserData*, CompanyData*);
 
 };
 

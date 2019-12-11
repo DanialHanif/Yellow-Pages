@@ -268,6 +268,10 @@
 		newUser->user->USER_ADDRESS = userDataContainer.front(); userDataContainer.pop();
 		newUser->user->USER_REG_DATE = userDataContainer.front(); userDataContainer.pop();
 		newUser->next = NULL;
+		newUser->user->USER_COMPANIES = NULL;
+		newUser->user->USER_PROMOTION = NULL;
+		newUser->user->USER_DEALS = NULL;
+		newUser->user->USER_SERVICES = NULL;
 
 		if (headerUserList->user == NULL) {//first load
 			delete usersList;
@@ -427,6 +431,10 @@
 		UserList* newUser = new UserList;
 		newUser->user = new UserData;
 		newUser->next = NULL;
+		newUser->user->USER_COMPANIES = NULL;
+		newUser->user->USER_PROMOTION = NULL;
+		newUser->user->USER_DEALS = NULL;
+		newUser->user->USER_SERVICES = NULL;
 		newUser->user->isAdmin = false;
 		newUser->user->USER_ID = generateID();
 		std::cout << "Fill in the details:" << std::endl;
@@ -503,21 +511,21 @@
 		case 1 : //to update data about user
 		{
 
-			std::cout << "Fill in the details:" << std::endl;
-			std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
-			checkValidInput(newUser->user->USER_NAME);
-			checkIfUserExist(newUser->user->USER_NAME);
-			std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
-			std::cout << "Email Address: "; std::getline(std::cin, newUser->user->USER_EMAIL);
-			std::cout << "Date of Birth (Day/Month/Year eg. 23/08/1998): "; std::getline(std::cin, newUser->user->USER_DOB); 
-			std::cout << "Street Address: "; std::getline(std::cin, newUser->user->USER_ADDRESS);
-			std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_PASSWORD);
-			checkValidInput(newUser->user->USER_PASSWORD);
-			newUser->user->USER_REG_DATE = registrationDate();
-			saveUserInfoToDatabase();
-			system("pause");
-			system("cls");
-			break;
+			//std::cout << "Fill in the details:" << std::endl;
+			//std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
+			//checkValidInput(newUser->user->USER_NAME);
+			//checkIfUserExist(newUser->user->USER_NAME);
+			//std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
+			//std::cout << "Email Address: "; std::getline(std::cin, newUser->user->USER_EMAIL);
+			//std::cout << "Date of Birth (Day/Month/Year eg. 23/08/1998): "; std::getline(std::cin, newUser->user->USER_DOB); 
+			//std::cout << "Street Address: "; std::getline(std::cin, newUser->user->USER_ADDRESS);
+			//std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_PASSWORD);
+			//checkValidInput(newUser->user->USER_PASSWORD);
+			//newUser->user->USER_REG_DATE = registrationDate();
+			//saveUserInfoToDatabase();
+			//system("pause");
+			//system("cls");
+			//break;
 		}
 		case 2 ://search available services
 		{

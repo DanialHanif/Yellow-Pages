@@ -43,7 +43,7 @@ class User {
 		UserList* getUsersList();
 
 		bool login();
-		void userMenu();
+		//void userMenu();
 
         void setup();
 		time_t generateID();

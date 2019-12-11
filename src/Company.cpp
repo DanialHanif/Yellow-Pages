@@ -36,13 +36,21 @@ void Company::saveCompanyListToDatabase(){
 		if (currentCompanyList->next != NULL) {
 			currentCompanyList = currentCompanyList->next;
 		}
-		else break;
+		else {
+			break;
+		}
 
 
 	}
 
 	file.close();
 	std::cout << std::endl << "Company data is saved!" << std::endl;
+	delete companyList;
+	companyList = new CompanyList;
+	companyList->company = NULL;
+	companyList->next = NULL;
+	headerCompanyList = companyList;
+	loadCompanyListFromDatabase();
 }
 
 void Company::loadCompanyListFromDatabase() {
@@ -121,7 +129,7 @@ void Company::addCompanyDataFromDBToList(std::queue<std::string> companyDataCont
 	newCompany->next = NULL;
 
 	if (headerCompanyList->company == NULL) {//first load
-		delete companyList;
+		
 		companyList = newCompany;
 		headerCompanyList = companyList;
 		currentCompanyList = headerCompanyList;
@@ -133,7 +141,9 @@ void Company::addCompanyDataFromDBToList(std::queue<std::string> companyDataCont
 		while (current) {
 			if (current->next == NULL) { current->next = newCompany; return; }
 
-			else current = current->next;
+			else {
+				current = current->next;
+			}
 		}
 	}
 
@@ -161,7 +171,9 @@ void Company::viewCompany(UserData* currentUser) {
 					if (currentCompanyList->next != NULL) {
 						currentCompanyList = currentCompanyList->next;
 					}
-					else break;
+					else {
+						break;
+					}
 				}
 				std::cout << "=========================================================" << std::endl;
 			}
@@ -182,14 +194,18 @@ void Company::viewCompany(UserData* currentUser) {
 								current->next = currentCompanyList;
 								break;
 							}
-							else current = current->next;
+							else {
+								current = current->next;
+							}
 						}
 					
 					}
 					if (currentCompanyList->next != NULL) {
 						currentCompanyList = currentCompanyList->next;
 					}
-					else break;
+					else {
+						break;
+					}
 				}
 				std::cout << "=========================================================" << std::endl;
 			}
@@ -252,17 +268,22 @@ std::string Company::registrationDate() {
 void Company::addCompany(UserData* currentUser) {
 
 		CompanyList* newCompany = new CompanyList;
+		newCompany->company = new CompanyData;
 		newCompany->next = NULL;
+		newCompany->company->COMPANY_REGISTRATION_DATE = registrationDate();
 		std::cin.ignore();
 
 		newCompany->company->COMPANY_ID = generateID();
 		if (currentUser->isAdmin){
 			std::cout << "Enter Owner ID: "; std::cin >> newCompany->company->COMPANY_OWNERID;
+			std::cin.ignore();
 		}
 		else if (currentUser->isEmployer) {
 			newCompany->company->COMPANY_OWNERID = currentUser->USER_ID;
 		}
-		else { std::cout << "You don't have permission to add a new Company!"; return; }
+		else { 
+			std::cout << "You don't have permission to add a new Company!"; return; //tosolve
+		}
 
 		std::cout << "Enter Company Name: "; std::getline(std::cin, newCompany->company->COMPANY_NAME);
 		std::cout << "Enter Company Description: "; std::getline(std::cin, newCompany->company->COMPANY_DESCRIPTION);
@@ -273,7 +294,7 @@ void Company::addCompany(UserData* currentUser) {
 
 
 		if (headerCompanyList->company == NULL) {//first load
-			delete companyList;
+			
 			companyList = newCompany;
 			headerCompanyList = companyList;
 			currentCompanyList = headerCompanyList;
@@ -285,7 +306,9 @@ void Company::addCompany(UserData* currentUser) {
 			while (currentCompanyList) {
 				if (currentCompanyList->next == NULL) { currentCompanyList->next = newCompany; return; }
 
-				else currentCompanyList = currentCompanyList->next;
+				else {
+					currentCompanyList = currentCompanyList->next;
+				}
 			}
 		}
 
@@ -297,7 +320,7 @@ void Company::editCompany(UserData* currentUser){
 
 		currentCompanyList = headerCompanyList;
 		int selected_id;
-		CompanyData* selectedCompany;
+		currentCompany = NULL;
 		std::cin.ignore();
 		if (currentUser->isAdmin || currentUser->isEmployer) {
 			
@@ -308,9 +331,9 @@ void Company::editCompany(UserData* currentUser){
 		}
 			
 		if (currentUser->isAdmin) {
-			while (true) {
+			while (currentCompanyList->company != NULL) {
 				if (currentCompanyList->company->COMPANY_ID == selected_id) {
-					selectedCompany = currentCompanyList->company;
+					currentCompany = currentCompanyList->company;
 					break;
 				}
 				else if (currentCompanyList->next == NULL) {
@@ -324,9 +347,9 @@ void Company::editCompany(UserData* currentUser){
 		}
 		else if(currentUser->isEmployer){
 			CompanyList* curr = currentUser->USER_COMPANIES;
-			while (true) {
+			while (curr != NULL) {
 				if (curr->company->COMPANY_ID == selected_id) {
-					selectedCompany = curr->company;
+					currentCompany = curr->company;
 					break;
 				}
 				else if (curr->next == NULL) {
@@ -339,68 +362,11 @@ void Company::editCompany(UserData* currentUser){
 			}
 		}
 
-		do {
-			std::cout << "Selected Company to edit:" << std::endl;
-			std::cout << "Company ID: " << selectedCompany->COMPANY_ID << std::endl;
-			std::cout << "Company Name: " << selectedCompany->COMPANY_NAME << std::endl;
-			std::cout << "Company Description: " << selectedCompany->COMPANY_DESCRIPTION << std::endl;
-			std::cout << "Company Address: " << selectedCompany->COMPANY_EMAIL << std::endl;
-			std::cout << "Company Contact Number: " << selectedCompany->COMPANY_CONTACTNUMBER << std::endl;
-			std::cout << "Company Website: " << selectedCompany->COMPANY_WEBSITE << std::endl;
-			std::cout << "Company Registration Date: " << selectedCompany->COMPANY_REGISTRATION_DATE << std::endl << std::endl;
-			
-			std::cout << "1. Update Company Name" << std::endl;
-			std::cout << "2. Update Company Description" << std::endl;
-			std::cout << "3. Update Company Email" << std::endl;
-			std::cout << "4. Update Company Contact Number" << std::endl;
-			std::cout << "5. Update Company Website" << std::endl;
-			if(currentUser->isAdmin) std::cout << "6. Update Company Owner ID" << std::endl;
-			std::cout << "0. Finish edit" << std::endl;
+		std::cout << "Selected Company to edit:" << std::endl;
+		viewCurrentCompanyInfo(currentCompany);
 
-			std::cin >> selected_id;
-
-			switch (selected_id) {
-				case 0: {
-					break;
-				}
-				case 1: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Name: "; std::getline(std::cin, selectedCompany->COMPANY_NAME);
-					break;
-				}
-				case 2: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Description: "; std::getline(std::cin, selectedCompany->COMPANY_DESCRIPTION);
-					break;
-				}
-				case 3: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Email: "; std::getline(std::cin, selectedCompany->COMPANY_EMAIL);
-					break;
-				}
-				case 4: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Contact Number: "; std::getline(std::cin, selectedCompany->COMPANY_CONTACTNUMBER);
-					break;
-				}
-				case 5: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Website: "; std::getline(std::cin, selectedCompany->COMPANY_WEBSITE);
-					break;
-				}
-				case 6: {
-					std::cin.ignore();
-					std::cout << "Enter new Company Owner ID: "; std::cin >> selectedCompany->COMPANY_OWNERID;
-					break;
-				}
-				default: {
-					std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
-					break;
-				}
-			}
-
-		} while (selected_id);		   							
-
+		editCurrentCompany(currentUser, currentCompany);
+	   							
 		saveCompanyListToDatabase();
 }
 
@@ -409,81 +375,502 @@ void Company::deleteCompany(UserData* currentUser){
 
 }
 
-/*void Company::searchCompany(UserData* currentUser) {//TODO
+void Company::searchCompany(UserData* currentUser) {
 
-
-	currentCompanyList = headerCompanyList;
 	int selected_id;
-	CompanyData* selectedCompany;
-	std::cin.ignore();
-
+	CompanyList* headerforCurrentList;
 	do {
-		std::cout << "1. Search by Company ID:";
-		std::cout << "2. Search by Name:";
-		std::cout << "3. Search by Keyword:";
-		std::cout << "3. View All Companies";
-		std::cout << "0. Exit Search:";
 		
+		std::string keyword = "";
+		std::cin.ignore();
+		currentCompanyList = headerCompanyList;
+		currentCompany = NULL;
+
+		std::cout << "1. Search by Company ID" << std::endl;
+		std::cout << "2. Search by Name" << std::endl;
+		std::cout << "3. Search by Keyword" << std::endl;
+		std::cout << "4. View All Companies" << std::endl;
+		std::cout << "0. Exit Search" << std::endl;
+		
+		std::cin >> selected_id;
+
 		switch (selected_id) {
 			case 0: {
+				return;
+			}
+			case 1: {
 				std::cout << "Enter Company ID: "; std::cin >> selected_id;
+
+				system("cls");
+				std::cout << "===================== Results =====================" << std::endl;
+				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+
+				if (headerCompanyList->company == NULL) {
+					std::cout << "No Company in database. Please create one." << std::endl;
+					system("pause");
+					return;
+				}
+				else {
+					while (currentCompanyList->company != NULL) {
+						if (std::to_string(currentCompanyList->company->COMPANY_ID).find(std::to_string(selected_id)) != std::string::npos) {
+							if (currentCompany == NULL) {
+								headerforCurrentList = currentCompanyList;
+							}
+							currentCompany = currentCompanyList->company;
+							viewCompanyBrief(currentCompany);
+							if (currentCompanyList->next == NULL) {
+								break;
+							}
+							else {
+								currentCompanyList = currentCompanyList->next;
+							}
+						}
+						else if (currentCompanyList->next == NULL && currentCompany == NULL) {
+							std::cout << "No company with the id is found!" << std::endl;
+							system("pause");
+							break;
+						}
+						else if (currentCompanyList->next == NULL) {
+							break;
+						}
+						else {
+							currentCompanyList = currentCompanyList->next;
+						}
+					}
+				}
+
+				if (currentCompany != NULL) {
+
+					std::cout << "\n=========================================================" << std::endl;
+
+					
+					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+					currentCompanyList = headerforCurrentList;
+					std::cin >> selected_id;
+
+					switch (selected_id) {
+
+						case 0: {
+							break;
+						}
+						case 1: {
+							std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+
+							while (true) {
+								if (currentCompanyList->company->COMPANY_ID == selected_id) {
+									currentCompany = currentCompanyList->company;
+									break;
+								}
+								else if (currentCompanyList->next == NULL) {
+									std::cout << "No company with the selected id is found!" << std::endl;
+									return;
+								}
+								else {
+									currentCompanyList = currentCompanyList->next;
+								}
+							}
+
+							viewCurrentCompanyInfo(currentCompany);
+							std::cout << "[0]Back ";
+							if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
+								std::cout << "[1]Edit " << std::endl;
+							}
+							std::cin >> selected_id;
+							if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+								editCurrentCompany(currentUser, currentCompany);
+							}
+
+							else {
+								break;
+							}
+						}
+						default: {
+							break;
+						}
+					}
+				}
+				
+				else {
+					std::cout << "\n=========================================================" << std::endl;
+					break;
+				}
+
 				break;
 			}
+			case 2: {
+				std::cout << "Enter Company Name: "; std::cin >> keyword;
+
+				system("cls");
+				std::cout << "===================== Results =====================" << std::endl;
+				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description"<< std::endl << std::endl;
+
+				if (headerCompanyList->company == NULL) {
+					std::cout << "No Company in database. Please create one." << std::endl;
+					system("pause");
+					return;
+				}
+				else {
+					while (currentCompanyList->company != NULL) {
+						if (currentCompanyList->company->COMPANY_NAME.find(keyword) != std::string::npos) {
+							if (currentCompany == NULL) {
+								headerforCurrentList = currentCompanyList;
+							}
+							currentCompany = currentCompanyList->company;
+							viewCompanyBrief(currentCompany);
+							if (currentCompanyList->next == NULL) {
+								break;
+							}
+							else {
+								currentCompanyList = currentCompanyList->next;
+							}
+						}
+						else if (currentCompanyList->next == NULL && currentCompany == NULL) {
+							std::cout << "No company with the name is found!" << std::endl;
+							system("pause");
+							break;
+						}
+						else if (currentCompanyList->next == NULL) {
+							break;
+						}
+						else {
+							currentCompanyList = currentCompanyList->next;
+						}
+					}
+				}
+				if (currentCompany != NULL) {
+
+					std::cout << "\n=========================================================" << std::endl;
+
+
+					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+					currentCompanyList = headerforCurrentList;
+					std::cin >> selected_id;
+
+					switch (selected_id) {
+
+					case 0: {
+						break;
+					}
+					case 1: {
+						std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+
+						while (true) {
+							if (currentCompanyList->company->COMPANY_ID == selected_id) {
+								currentCompany = currentCompanyList->company;
+								break;
+							}
+							else if (currentCompanyList->next == NULL) {
+								std::cout << "No company with the selected id is found!" << std::endl;
+								return;
+							}
+							else {
+								currentCompanyList = currentCompanyList->next;
+							}
+						}
+
+						viewCurrentCompanyInfo(currentCompany);
+						std::cout << "[0]Back ";
+						if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
+							std::cout << "[1]Edit " << std::endl;
+						}
+						std::cin >> selected_id;
+						if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+							editCurrentCompany(currentUser, currentCompany);
+						}
+
+						else {
+							break;
+						}
+					}
+					default: {
+						break;
+					}
+					}
+				}
+
+				else {
+					std::cout << "\n=========================================================" << std::endl;
+					break;
+				}
+
+				break;
+			}
+			case 3: {
+				std::cout << "Enter Keyword: "; std::cin >> keyword;
+
+				system("cls");
+				std::cout << "===================== Results =====================" << std::endl;
+				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+
+				if (headerCompanyList->company == NULL) {
+					std::cout << "No Company in database. Please create one." << std::endl;
+					system("pause");
+					return;
+				}
+				else {
+					while (currentCompanyList->company != NULL) {
+						if (currentCompanyList->company->COMPANY_DESCRIPTION.find(keyword) != std::string::npos) {
+							if (currentCompany == NULL) {
+								headerforCurrentList = currentCompanyList;
+							}
+							currentCompany = currentCompanyList->company;
+							viewCompanyBrief(currentCompany);
+							if (currentCompanyList->next == NULL) {
+								break;
+							}
+							else {
+								currentCompanyList = currentCompanyList->next;
+							}
+						}
+						else if (currentCompanyList->next == NULL && currentCompany == NULL) {
+							std::cout << "No company with the keyword is found!" << std::endl;
+							system("pause");
+							break;
+						}
+						else if (currentCompanyList->next == NULL) {
+							break;
+						}
+						else {
+							currentCompanyList = currentCompanyList->next;
+						}
+					}
+				}
+
+				if (currentCompany != NULL) {
+
+					std::cout << "\n=========================================================" << std::endl;
+
+
+					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+					currentCompanyList = headerforCurrentList;
+					std::cin >> selected_id;
+
+					switch (selected_id) {
+
+						case 0: {
+							break;
+						}
+						case 1: {
+							std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+
+							while (true) {
+								if (currentCompanyList->company->COMPANY_ID == selected_id) {
+									currentCompany = currentCompanyList->company;
+									break;
+								}
+								else if (currentCompanyList->next == NULL) {
+									std::cout << "No company with the selected id is found!" << std::endl;
+									return;
+								}
+								else {
+									currentCompanyList = currentCompanyList->next;
+								}
+							}
+
+							viewCurrentCompanyInfo(currentCompany);
+							std::cout << "[0]Back ";
+							if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
+								std::cout << "[1]Edit " << std::endl;
+							}
+							std::cin >> selected_id;
+							if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+								editCurrentCompany(currentUser, currentCompany);
+							}
+
+							else {
+								break;
+							}
+						}
+						default: {
+							break;
+						}
+					}
+				}
+
+				else {
+					std::cout << "\n=========================================================" << std::endl;
+					break;
+				}
+
+				break;
+			}
+			case 4: {
+
+				if (headerCompanyList->company == NULL) {
+					std::cout << "No Company in database. Please create one." << std::endl;
+					system("pause");
+					return;
+				}
+				else {
+					system("cls");
+					std::cout << "===================== Results =====================" << std::endl;
+					std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+					while (currentCompanyList->company != NULL) {
+						if (currentCompany == NULL) {
+							headerforCurrentList = currentCompanyList;
+						}
+						currentCompany = currentCompanyList->company;
+						viewCompanyBrief(currentCompany);
+
+						if (currentCompanyList->next == NULL) {
+							break;
+						}
+						else {
+							currentCompanyList = currentCompanyList->next;
+						}
+					}
+
+					if (currentCompany != NULL) {
+
+						std::cout << "\n=========================================================" << std::endl;
+
+
+						std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+						currentCompanyList = headerforCurrentList;
+						std::cin >> selected_id;
+
+						switch (selected_id) {
+
+						case 0: {
+							break;
+						}
+						case 1: {
+							std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+
+							while (currentCompanyList->company != NULL) {
+								if (currentCompanyList->company->COMPANY_ID == selected_id) {
+									currentCompany = currentCompanyList->company;
+									break;
+								}
+								else if (currentCompanyList->next == NULL) {
+									std::cout << "No company with the selected id is found!" << std::endl;
+									return;
+								}
+								else {
+									currentCompanyList = currentCompanyList->next;
+								}
+							}
+
+							viewCurrentCompanyInfo(currentCompany);
+							std::cout << "[0]Back ";
+							if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
+								std::cout << "[1]Edit " << std::endl;
+							}
+							std::cin >> selected_id;
+							if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+								editCurrentCompany(currentUser, currentCompany);
+							}
+
+							else {
+								break;
+							}
+						}
+						default: {
+							break;
+						}
+						}
+					}
+					else {
+
+						std::cout << "No Companies in database!\n" << std::endl;
+
+
+						std::cout << "\n=========================================================" << std::endl;
+
+
+					}
+				}
+				break;
+			}
+
 			default: {
-			}
-		}
-
-		system("cls");
-		std::cout << "===================== Company Lists =====================" << std::endl;
-		std::cout << "Company ID\t| " << "Company Name" << std::endl;
-
-		while (true) {
-			if (currentCompanyList->company->COMPANY_ID == selected_id) {
-				selectedCompany = currentCompanyList->company;       
 				break;
-			}
-			else if (currentCompanyList->next == NULL) {
-				std::cout << "No company with the selected id is found!";
-				break;
-			}
-			else {
-				currentCompanyList = currentCompanyList->next;
 			}
 		}
 
 	} while (selected_id);
 
-	if (currentUser->isAdmin) {
-		while (true) {
-			if (currentCompanyList->company->COMPANY_ID == selected_id) {
-				selectedCompany = currentCompanyList->company;
-				break;
-			}
-			else if (currentCompanyList->next == NULL) {
-				std::cout << "No company with the selected id is found!";
-				return;
-			}
-			else {
-				currentCompanyList = currentCompanyList->next;
-			}
-		}
-	}
-	else if (currentUser->isEmployer) {
-		CompanyList* curr = currentUser->USER_COMPANIES;
-		while (true) {
-			if (curr->company->COMPANY_ID == selected_id) {
-				selectedCompany = curr->company;
-				break;
-			}
-			else if (curr->next == NULL) {
-				std::cout << "No company with the selected id is found!";
-				return;
-			}
-			else {
-				curr = curr->next;
-			}
-		}
-	}
 
+}
 
-}*/
+void Company::viewCurrentCompanyInfo(CompanyData* currentCompany) {
+
+	std::cout << std::endl;
+	std::cout << "==================== Company Info =======================" << std::endl;
+	std::cout << "ID:  " << currentCompany->COMPANY_ID << std::endl;
+	std::cout << "Name:  " << currentCompany->COMPANY_NAME << std::endl;
+	std::cout << "Description:  " << currentCompany->COMPANY_DESCRIPTION << std::endl;
+	std::cout << "Email Address: " << currentCompany->COMPANY_EMAIL << std::endl;
+	std::cout << "Contact Number: " << currentCompany->COMPANY_CONTACTNUMBER << std::endl;
+	std::cout << "Website: " << currentCompany->COMPANY_WEBSITE << std::endl;
+	std::cout << "Registration Date: " << currentCompany->COMPANY_REGISTRATION_DATE << std::endl;
+	std::cout << "=========================================================" << std::endl << std::endl;
+
+}
+
+void Company::viewCompanyBrief(CompanyData* currentCompany) {
+
+	std::cout << currentCompany->COMPANY_ID << "\t" << currentCompany->COMPANY_NAME << "\t" << currentCompany->COMPANY_DESCRIPTION << std::endl;
+}
+
+void Company::editCurrentCompany(UserData* currentUser, CompanyData* selectedCompany) {
+
+	int selected_id;
+
+	do {
+		std::cout << "Selected Company to edit:" << std::endl;
+		viewCurrentCompanyInfo(selectedCompany);
+
+		std::cout << "1. Update Company Name" << std::endl;
+		std::cout << "2. Update Company Description" << std::endl;
+		std::cout << "3. Update Company Email" << std::endl;
+		std::cout << "4. Update Company Contact Number" << std::endl;
+		std::cout << "5. Update Company Website" << std::endl;
+		if (currentUser->isAdmin) std::cout << "6. Update Company Owner ID" << std::endl;
+		std::cout << "0. Finish edit" << std::endl;
+
+		std::cin >> selected_id;
+
+		switch (selected_id) {
+		case 0: {
+			break;
+		}
+		case 1: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Name: "; std::getline(std::cin, selectedCompany->COMPANY_NAME);
+			break;
+		}
+		case 2: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Description: "; std::getline(std::cin, selectedCompany->COMPANY_DESCRIPTION);
+			break;
+		}
+		case 3: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Email: "; std::getline(std::cin, selectedCompany->COMPANY_EMAIL);
+			break;
+		}
+		case 4: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Contact Number: "; std::getline(std::cin, selectedCompany->COMPANY_CONTACTNUMBER);
+			break;
+		}
+		case 5: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Website: "; std::getline(std::cin, selectedCompany->COMPANY_WEBSITE);
+			break;
+		}
+		case 6: {
+			std::cin.ignore();
+			std::cout << "Enter new Company Owner ID: "; std::cin >> selectedCompany->COMPANY_OWNERID;
+			break;
+		}
+		default: {
+			std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
+			break;
+		}
+		}
+
+	} while (selected_id);
+
+}

@@ -1,7 +1,6 @@
 //MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
 
 #include "User.h"
-#include "Payment.h"
 
 
     User::User(){
@@ -24,9 +23,8 @@
     std::string User::getPassword(){ return this->userData->USER_PASSWORD; }
     std::string User::getRegistrationDate(){ return this->userData->USER_REG_DATE; }*/
 
-    UserData* User::getUserData(){ return this->currentUser; }
-    UserList* User::getUsersList(){ return this->headerUserList; }
-
+    UserData* User::getUserData(){ return this->currentUserList->user; }
+    UserList* User::getUserList(){ return this->headerUserList; }
 
 	/*std::string User::hexEncodeInfo(std::string const& info) {
 
@@ -127,7 +125,6 @@
 				if (currentUserList->user->USER_NAME == username) {
 					if (currentUserList->user->USER_PASSWORD == password) {
 						currentUser = currentUserList->user;
-
 						return true;
 					}
 					else {
@@ -173,41 +170,85 @@
 			}*/
 			//if (info.rfind(user_pass) != std::string::npos) {
 			if (info.size() > 0) {
-				//trim first line that contains user information
-				std::string::size_type endOfUserRawData = 0;
-				endOfUserRawData = info.find("}", endOfUserRawData);
-				std::string endOfRawUserData;
-				endOfRawUserData = info.substr(1, endOfUserRawData - 1);
+				//trim first part of info that contains user information
+				std::string::size_type endOfFirstPart = 0;
+				endOfFirstPart = info.find("}", endOfFirstPart);
+				std::string firstTrimmedInfo;
+				firstTrimmedInfo = info.substr(1, endOfFirstPart - 1);
+
+				//trim second part of info that contains postings
+				std::string::size_type firstOfSecondPart = 0;
+				firstOfSecondPart = info.find("[", firstOfSecondPart);
+				std::string secondTrimmedInfo;
+				secondTrimmedInfo = info.substr(firstOfSecondPart + 1, (info.length() - firstOfSecondPart - 2));
 
 				bool finish = false;
 				position = 0;
-				std::queue<std::string> userDataContainer;
-				//parse data
+				std::vector<std::string> firstTrimmedParts, secondTrimmedParts;
+				//parse first part
 				while (!finish) {
 
 					std::string::size_type start = position;
-					position = endOfRawUserData.find(";", position);
+					position = firstTrimmedInfo.find(";", position);
 					if (position == std::string::npos) {
-						position = endOfRawUserData.length();
+						position = firstTrimmedInfo.length();
 						finish = true;
 					}
-					userDataContainer.push(endOfRawUserData.substr(start, position - start));
+					firstTrimmedParts.push_back(firstTrimmedInfo.substr(start, position - start));
 					position++;
 
 				}
 
 				position = 0;
 				finish = false;
+				//parse second part
+				/*while (!finish) {
 
-				if ((userDataContainer.size() == 10)) {
-					addUserFromDBToList(userDataContainer);
+					std::string::size_type start = position;
+					position = secondTrimmedInfo.find(";", position);
+					if (position == std::string::npos) {
+						position = secondTrimmedInfo.length();
+						finish = true;
+					}
+					secondTrimmedParts.push_back(secondTrimmedInfo.substr(start, position - start));
+					position++;
+
+				}*/
+
+				if ((firstTrimmedParts.size() == 10)) {
+
+					addUserFromDBToList(firstTrimmedParts);
+
+
 				}
+
+				/*if ((secondTrimmedParts.size() <= 1)) {
+
+					return;
+					break;
+
+				}*/
+				//else {
+
+				//	for (int i = 0; i < secondTrimmedParts.size(); i = i + 3) {
+
+				//		//addPostings(secondTrimmedParts.at(i), secondTrimmedParts.at(i + 1), stoi(secondTrimmedParts.at(i + 2)));
+
+				//	}
+
+				//}
+
 			}
 			else {
 				return;
 			}
+
+
+			}
+
+
+
 		}
-	}
 
 
 	time_t User::generateID() { time_t currentTime = time(0); return currentTime; }
@@ -235,7 +276,7 @@
 
 
 
-	/*void checkSkillsFields(std::string& n, std::string& d, int& l) {
+	void checkSkillsFields(std::string& n, std::string& d, int& l) {
 		if ((n.empty() == true) || (d.empty() == true) || ((l > 5) || (l < 0))) {
 			std::cout << "Input Error! Please enter valid input!"; 	std::cin.ignore();
 			std::cout << "Skill name: "; std::getline(std::cin, n); std::cin.ignore();
@@ -249,24 +290,24 @@
 
 			return;
 		}
-	}*/
+	}
 
-	void User::addUserFromDBToList(std::queue<std::string> userDataContainer) {
+	void User::addUserFromDBToList(std::vector<std::string> userInfo) {
 
 		UserList* newUser = new UserList;
 		newUser->user = new UserData;
-		newUser->user->USER_ID = stoi(userDataContainer.front()); userDataContainer.pop();
-		newUser->user->isAdmin = ("1" == userDataContainer.front()); userDataContainer.pop();
-		newUser->user->isEmployer = ("1" == userDataContainer.front()); userDataContainer.pop();
+		newUser->user->USER_ID = stoi(userInfo.at(0));
+		newUser->user->isAdmin = ("1" == userInfo.at(1));
+		newUser->user->isEmployer = ("1" == userInfo.at(2));
 		newUser->user->isGuest = false;
 		newUser->user->isLoggedIn = false;
-		newUser->user->USER_NAME = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_PASSWORD = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_FULL_NAME = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_EMAIL = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_DOB = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_ADDRESS = userDataContainer.front(); userDataContainer.pop();
-		newUser->user->USER_REG_DATE = userDataContainer.front(); userDataContainer.pop();
+		newUser->user->USER_NAME = userInfo.at(3);
+		newUser->user->USER_PASSWORD = userInfo.at(4);
+		newUser->user->USER_FULL_NAME = userInfo.at(5);
+		newUser->user->USER_EMAIL = userInfo.at(6);
+		newUser->user->USER_DOB = userInfo.at(7);
+		newUser->user->USER_ADDRESS = userInfo.at(8);
+		newUser->user->USER_REG_DATE = userInfo.at(9);
 		newUser->next = NULL;
 
 		if (headerUserList->user == NULL) {//first load
@@ -277,6 +318,7 @@
 		}
 
 		else {
+
 			UserList* current = headerUserList;
 			while (current) {
 				if (current->next == NULL) { current->next = newUser; return; }
@@ -350,7 +392,7 @@
 		else std::cout << "No skill with the selected number is found!" << std::endl; return;
 	}*/
 
-    void User::viewCurrentUserInfo(){
+    void User::printInfo(){
 
 		std::cout << std::endl;
 		std::cout << "============ Profile Info ============" << std::endl;
@@ -408,6 +450,7 @@
 		}
 		else return;
 	}
+
 	
     void User::setup(){
 
@@ -434,25 +477,7 @@
 
 		while (true) {
 			std::getline(std::cin,employerState);
-			if (employerState == "y" || employerState == "Y") { 
-				std::cout << "Employer requires a subscription to be registered. Do you want to proceed?[y/N]";
-				
-				employerState = "";
-				std::cin >> employerState;
-				if (employerState == "y" || employerState == "Y") {
-					Payment payMenu;
-					if (payMenu.result() == true) {
-						newUser->user->isEmployer = 1; 
-						std::cin.ignore();
-						break;
-					}
-					else {
-						std::cout << "Payment is not successful. Returning back to menu.";
-						break;
-					}
-				}
-				
-			}
+			if (employerState == "y" || employerState == "Y") { newUser->user->isEmployer = 1; break; }
 			else if (employerState == "n" || employerState == "N") { newUser->user->isEmployer = 0; break; }
 			else { std::cout << "Invalid input! Please re-enter: "; }
 		}
@@ -488,52 +513,3 @@
 		return;
     }
 
-	/*void User::userMenu() 
-	{
-		int choiceMenu;
-		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" please enter your choice."<< std::endl;
-		std::cout << "1.	Update data" << std::endl;
-		std::cout << "2.	Search services" << std::endl;
-		std::cout << "3.	Update services" << std::endl;
-		std::cout << "4.	Logout" << std::endl;
-		std::cout << "Choice : ";
-		std::cin >> choiceMenu;
-		switch (choiceMenu)
-		{
-		case 1 : //to update data about user
-		{
-
-			std::cout << "Fill in the details:" << std::endl;
-			std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
-			checkValidInput(newUser->user->USER_NAME);
-			checkIfUserExist(newUser->user->USER_NAME);
-			std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
-			std::cout << "Email Address: "; std::getline(std::cin, newUser->user->USER_EMAIL);
-			std::cout << "Date of Birth (Day/Month/Year eg. 23/08/1998): "; std::getline(std::cin, newUser->user->USER_DOB); 
-			std::cout << "Street Address: "; std::getline(std::cin, newUser->user->USER_ADDRESS);
-			std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_PASSWORD);
-			checkValidInput(newUser->user->USER_PASSWORD);
-			newUser->user->USER_REG_DATE = registrationDate();
-			saveUserInfoToDatabase();
-			system("pause");
-			system("cls");
-			break;
-		}
-		case 2 ://search available services
-		{
-			break;
-		}
-		case 3://update service
-		{
-			break;
-		}
-		case 4://logout
-		{
-
-			break;
-		}
-		default:
-			break;
-		}
-	}*/
-	  

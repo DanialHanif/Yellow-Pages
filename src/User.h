@@ -1,6 +1,6 @@
 //MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
 
-#include <vector>
+#include <queue>
 #include <ctime>
 #include <sstream>
 #include <iomanip>
@@ -43,6 +43,8 @@ class User {
 		UserList* getUsersList();
 
 		bool login();
+		void userMenu();
+
         void setup();
 		time_t generateID();
         /*void setUsername(std::string);
@@ -52,7 +54,7 @@ class User {
         void setStreetAddress(std::string);
         void setPassword(std::string);*/
         std::string registrationDate();
-        void addUserFromDBToList(std::vector<std::string>);
+        void addUserFromDBToList(std::queue<std::string>);
         void addUserToList(UserData*);
         /*void addPostings(std::string, std::string, int);
         void deleteSkills(int&);
@@ -61,7 +63,8 @@ class User {
 		void loadUserInfoFromDatabaseToList();
 		void checkValidInput(std::string&);
 		void checkIfUserExist(std::string&);
-        void printInfo();
+        void viewUsers();
+        void viewCurrentUserInfo();
         
 
 };

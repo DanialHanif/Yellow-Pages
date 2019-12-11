@@ -11,13 +11,14 @@
 struct CompanyData {
 
 	int COMPANY_ID;
+	int COMPANY_OWNERID;
 	std::string COMPANY_NAME;
 	std::string COMPANY_DESCRIPTION;
-	std::string COMPANY_ADDRESS;
+	std::string COMPANY_EMAIL;
 	std::string COMPANY_CONTACTNUMBER;
 	std::string COMPANY_WEBSITE;
+	std::string COMPANY_REGISTRATION_DATE;
 	//std::string COMPANY_CATEGORY;
-	CompanyData* next;
 
 };
  
@@ -30,9 +31,9 @@ struct JobData {
 	std::string JOB_CONTACTNUMBER;
 	std::string JOB_WEBSITE;
 	std::string JOB_COMPANY;
+	std::string POSTING_DATE;
 	//std::string JOB_CATEGORY;
 	CompanyData* companyLink;
-	JobData* next;
 
 };
 
@@ -44,6 +45,7 @@ struct ServiceData {
 	std::string SERVICE_CONTACTNUMBER;
 	std::string SERVICE_COMPANY;
 	std::string SERVICE_WEBSITE;
+	std::string POSTING_DATE;
 	//std::string SERVICE_CATEGORY;
 	CompanyData* companyLink;
 	ServiceData* next;
@@ -65,6 +67,7 @@ struct PromotionData {
 	std::string DEAL_NAME;
 	std::string DEAL_DESCRIPTION;
 	double DEAL_PRICE;
+	std::string POSTING_DATE;
 
 };
 

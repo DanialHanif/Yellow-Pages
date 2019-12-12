@@ -40,6 +40,7 @@ public:
 	void editCurrentPromotion(UserData*, PromotionData*);
 	void deleteCurrentPromotion(UserData*, PromotionData*);
 	//void viewPromotionGuest();
+	void clearList();
 };
 
 #endif // !PROMOTION_H

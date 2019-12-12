@@ -25,35 +25,64 @@ void Job::saveJobListToDatabase() {
 
 	while (true) {
 
-		firstpart = "{" + std::to_string(currentJobList->job->JOB_ID) + ";" + std::to_string(currentJobList->job->JOB_OWNERID) + ";" + currentJobList->job->JOB_NAME + ";" + currentJobList->job->JOB_DESCRIPTION + ";"
-						+ currentJobList->job->JOB_POSITION + ";" + currentJobList->job->JOB_CONTACTNUMBER + ";" + currentJobList->job->JOB_WEBSITE + ";" + currentJobList->job->JOB_COMPANY + ";" + currentJobList->job->JOB_POSTING_DATE + "}";
+		if (currentJobList->job) {
+			firstpart = "{" + std::to_string(currentJobList->job->JOB_ID) + ";" + std::to_string(currentJobList->job->JOB_OWNERID) + ";" + currentJobList->job->JOB_NAME + ";" + currentJobList->job->JOB_DESCRIPTION + ";"
+				+ currentJobList->job->JOB_POSITION + ";" + currentJobList->job->JOB_CONTACTNUMBER + ";" + currentJobList->job->JOB_WEBSITE + ";" + currentJobList->job->JOB_COMPANY + ";" + currentJobList->job->JOB_POSTING_DATE + "}";
 
-		info = firstpart;
+			info = firstpart;
 
-		file << info << std::endl;
-
-		if (currentJobList->next != NULL) {
-			currentJobList = currentJobList->next;
+			file << info << std::endl;
 		}
-		else {
-			break;
-		}
+			if (currentJobList->next != NULL) {
+				currentJobList = currentJobList->next;
+			}
+			else {
+				break;
+			}
 
-
+		
 	}
 
 	file.close();
 	std::cout << std::endl << "Job data is saved!" << std::endl;
-	delete jobList;
-	jobList = new JobList;
-	jobList->job = NULL;
-	jobList->next = NULL;
-	headerJobList = jobList;
-	loadJobListFromDatabase();
+
+}
+
+void Job::clearList() {
+
+	JobList* list;
+	JobData* listData;
+	while (jobList) {
+
+		if (jobList->next != NULL) {
+			list = jobList;
+			listData = jobList->job;
+			jobList = jobList->next;
+			delete listData;
+			delete list;
+			listData = NULL;
+			list = NULL;
+		}
+			
+		else {
+			list = jobList;
+			listData = jobList->job;
+			delete listData;
+			delete list;
+			listData = NULL;
+			list = NULL;
+			jobList->job = NULL;
+			jobList = NULL;
+			return;
+		}
+	}
+
+
 }
 
 void Job::loadJobListFromDatabase() {
 
+	
 	std::string info;
 	std::ifstream jobDatabase("jobDB.dat");
 	std::string::size_type position = 0;
@@ -87,7 +116,7 @@ void Job::loadJobListFromDatabase() {
 			position = 0;
 			finish = false;
 
-			if ((jobDataContainer.size() == 6)) {
+			if ((jobDataContainer.size() == 9)) {
 
 				addJobDataFromDBToList(jobDataContainer);
 
@@ -115,7 +144,7 @@ void Job::addJobDataFromDBToList(std::queue<std::string> jobDataContainer) {
 	newJob->job->JOB_NAME = jobDataContainer.front(); jobDataContainer.pop();
 	newJob->job->JOB_DESCRIPTION = jobDataContainer.front(); jobDataContainer.pop();
 	newJob->job->JOB_POSITION = jobDataContainer.front(); jobDataContainer.pop();
-	newJob->job->JOB_CONTACT = jobDataContainer.front(); jobDataContainer.pop();
+	newJob->job->JOB_CONTACTNUMBER = jobDataContainer.front(); jobDataContainer.pop();
 	newJob->job->JOB_WEBSITE = jobDataContainer.front(); jobDataContainer.pop();
 	newJob->job->JOB_COMPANY = jobDataContainer.front(); jobDataContainer.pop();
 	newJob->job->JOB_POSTING_DATE = jobDataContainer.front(); jobDataContainer.pop();
@@ -125,14 +154,14 @@ void Job::addJobDataFromDBToList(std::queue<std::string> jobDataContainer) {
 
 		delete jobList;
 		jobList = newJob;
-		headerJobList = JobList;
+		headerJobList = jobList;
 		currentJobList = headerJobList;
 	}
 
 	else {
 
 		JobList* current = headerJobList;
-		while (current) {
+		while (true) {
 			if (current->next == NULL) { current->next = newJob; return; }
 
 			else {
@@ -145,7 +174,7 @@ void Job::addJobDataFromDBToList(std::queue<std::string> jobDataContainer) {
 
 void Job::viewJob(UserData* currentUser) {
 
-
+	JobList* headerforCurrentList;
 	if (headerJobList->job == NULL) {
 		std::cout << "No Job in database. Please create one.";
 		return;
@@ -158,7 +187,7 @@ void Job::viewJob(UserData* currentUser) {
 		currentJobList = headerJobList;
 		while (currentJobList->job != NULL) {
 
-			if (currentUser->isAdmin == true) {
+			if (currentUser->isAdmin) {
 				while (currentJobList->job != NULL) {
 
 					std::cout << currentJobList->job->JOB_ID << "\t" << currentJobList->job->JOB_OWNERID << "\t" << currentJobList->job->JOB_NAME << std::endl;
@@ -169,6 +198,7 @@ void Job::viewJob(UserData* currentUser) {
 						break;
 					}
 				}
+				goto done;
 				std::cout << "=========================================================" << std::endl;
 				break;
 			}
@@ -178,14 +208,17 @@ void Job::viewJob(UserData* currentUser) {
 				while (currentJobList->job != NULL) {
 
 					//add matches to user jobs
-					if (currentUser->USER_JOB == NULL) {
-						currentUser->USER_JOB = currentJobList;
+					if (currentUser->USER_JOBS == NULL) {
+						
+						currentUser->USER_JOBS = currentJobList;
+						headerforCurrentList = currentUser->USER_JOBS;
 						break;
 					}
-					else if (currentUser->USER_JOB != NULL && currentUser->USER_JOB->next == NULL) {
-
-						currentUser->USER_JOB->next = currentJobList;
-						break;
+					else if (currentUser->USER_JOBS != NULL && currentUser->USER_JOBS->next == NULL) {
+						
+							currentUser->USER_JOBS->next = currentJobList;
+							break;
+					
 
 					}
 					else {
@@ -198,13 +231,64 @@ void Job::viewJob(UserData* currentUser) {
 				currentJobList = currentJobList->next;
 			}
 			else {
+				done:
+				int selected_id;
+				
+				std::cout << "=========================================================" << std::endl;
+
+				std::cout << "[0]Back"; std::cout << " [1]Select Job to View" << std::endl;
+				currentJobList = headerforCurrentList;
+				std::cin >> selected_id;
+
+				switch (selected_id) {
+
+				case 0: {
+					break;
+				}
+				case 1: {
+					std::cout << "Enter Job ID to select:"; std::cin >> selected_id;
+
+					while (true) {
+						if (currentJobList->job->JOB_ID == selected_id) {
+							currentJob = currentJobList->job;
+							break;
+						}
+						else if (currentJobList->next == NULL) {
+							std::cout << "No Job with the selected id is found!" << std::endl;
+							return;
+						}
+						else {
+							currentJobList = currentJobList->next;
+						}
+					}
+
+					viewCurrentJobInfo(currentJob);
+					std::cout << "[0]Back ";
+					if (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID) {
+						std::cout << "[1]Edit " << std::endl;
+					}
+					std::cin >> selected_id;
+					if (selected_id == 1 && (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID)) {
+						editCurrentJob(currentUser, currentJob);
+					}
+
+					else {
+						break;
+					}
+				}
+				default: {
+					break;
+				}
+				}
 				break;
 			}
 
 		}
 
 	}
-	std::cout << "=========================================================" << std::endl;
+	
+
+
 }
 
 void Job::checkValidInput(std::string& s) {
@@ -276,8 +360,11 @@ void Job::addJob(UserData* currentUser) {
 
 	std::cout << "Enter Job Name: "; std::getline(std::cin, newJob->job->JOB_NAME);
 	std::cout << "Enter Job Description: "; std::getline(std::cin, newJob->job->JOB_DESCRIPTION);
+	std::cout << "Enter Job Position: "; std::getline(std::cin, newJob->job->JOB_POSITION);
+	std::cout << "Enter Job Contact Number: "; std::getline(std::cin, newJob->job->JOB_CONTACTNUMBER);
+	std::cout << "Enter Job Website: "; std::getline(std::cin, newJob->job->JOB_WEBSITE);
+	std::cout << "Enter Job Company: "; std::getline(std::cin, newJob->job->JOB_COMPANY);
 	newJob->job->JOB_POSTING_DATE = postingDate();
-	std::cout << "Enter Job Position: "; std::cin >> newJob->job->JOB_POSITION;
 
 
 	if (headerJobList->job == NULL) {//first load
@@ -289,11 +376,24 @@ void Job::addJob(UserData* currentUser) {
 
 	else {
 
+		JobList* current = headerJobList;
+		while (true) {
+			if (current->next == NULL) { current->next = newJob; return; }
+
+			else {
+				current = current->next;
+			}
+		}
+	}
+
+	/*else {
+
+
 		currentJobList = headerJobList;
-		while (currentJobList) {
+		while (currentJobList->job) {
 			if (currentUser->isEmployer) {
-				if (currentUser->USER_JOB == NULL) { currentUser->USER_JOB = newJob; break; }
-				if (currentUser->USER_JOB != NULL && currentUser->USER_JOB->next == NULL) { currentUser->USER_JOB->next = newJob; break; }
+				if (currentUser->USER_JOBS == NULL) { currentUser->USER_JOBS = newJob; break; }
+				if (currentUser->USER_JOBS != NULL && currentUser->USER_JOBS->next == NULL) { currentUser->USER_JOBS->next = newJob; break; }
 			}
 			if (currentJobList->next == NULL) { currentJobList->next = newJob; break; }
 
@@ -301,10 +401,11 @@ void Job::addJob(UserData* currentUser) {
 				currentJobList = currentJobList->next;
 			}
 		}
-	}
+	}*/
 
 	saveJobListToDatabase();
 	viewJob(currentUser);
+	system("Pause");
 }
 
 void Job::editJob(UserData* currentUser) {
@@ -337,7 +438,7 @@ void Job::editJob(UserData* currentUser) {
 		}
 	}
 	else if (currentUser->isEmployer) {
-		JobList* curr = currentUser->USER_JOB;
+		JobList* curr = currentUser->USER_JOBS;
 		while (curr != NULL) {
 			if (curr->job->JOB_ID == selected_id) {
 				currentJob = curr->job;
@@ -429,7 +530,7 @@ void Job::searchJob(UserData* currentUser) {
 		std::cout << "1. Search by Job ID" << std::endl;
 		std::cout << "2. Search by Name" << std::endl;
 		std::cout << "3. Search by Keyword" << std::endl;
-		std::cout << "4. View All Companies" << std::endl;
+		std::cout << "4. View All Jobs" << std::endl;
 		std::cout << "0. Exit Search" << std::endl;
 		std::cout << "\n\tChoice : ";
 		std::cin >> selected_id;
@@ -654,7 +755,7 @@ void Job::searchJob(UserData* currentUser) {
 			}
 			else {
 				while (currentJobList->job != NULL) {
-					if (currentJobList->job->JOB_DESCRIPTION.find(keyword) != std::string::npos) {
+					if ((currentJobList->job->JOB_DESCRIPTION.find(keyword) != std::string::npos) || (currentJobList->job->JOB_NAME.find(keyword) != std::string::npos)) {
 						if (currentJob == NULL) {
 							headerforCurrentList = currentJobList;
 						}
@@ -851,9 +952,12 @@ void Job::viewCurrentJobInfo(JobData* currentJob) {
 	std::cout << "==================== Job Info =======================" << std::endl;
 	std::cout << "ID:  " << currentJob->JOB_ID << std::endl;
 	std::cout << "Name:  " << currentJob->JOB_NAME << std::endl;
+	std::cout << "Position: " << currentJob->JOB_POSITION << std::endl;
 	std::cout << "Description:  " << currentJob->JOB_DESCRIPTION << std::endl;
 	std::cout << "Posting Date: " << currentJob->JOB_POSTING_DATE << std::endl;
-	std::cout << "Position: " << currentJob->JOB_POSITION << std::endl;
+	std::cout << "Contact Number: " << currentJob->JOB_CONTACTNUMBER << std::endl;
+	std::cout << "Company: " << currentJob->JOB_COMPANY << std::endl;
+	std::cout << "Website: " << currentJob->JOB_WEBSITE << std::endl;
 	std::cout << "=========================================================" << std::endl << std::endl;
 
 }
@@ -920,7 +1024,6 @@ void Job::editCurrentJob(UserData* currentUser, JobData* selectedJob) {
 
 	} while (selected_id);
 	saveJobListToDatabase();
-	loadJobListFromDatabase();
 }
 
 void Job::deleteCurrentJob(UserData* currentUser, JobData* selectedCompany) {
@@ -931,7 +1034,6 @@ void Job::deleteCurrentJob(UserData* currentUser, JobData* selectedCompany) {
 	std::cout << "Selected Company has been deleted" << std::endl;
 
 	saveJobListToDatabase();
-	loadJobListFromDatabase();
 
 	return;
 

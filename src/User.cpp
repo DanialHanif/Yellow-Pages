@@ -31,16 +31,17 @@
 
 		while (true) {
 		
-			firstpart = "{" + std::to_string(currentUserList->user->USER_ID) + ";" + std::to_string(currentUserList->user->isAdmin) + ";" + std::to_string(currentUserList->user->isEmployer) + ";"
-						+ currentUserList->user->USER_NAME + ";" + currentUserList->user->USER_PASSWORD + ";" 
-						+ currentUserList->user->USER_FULL_NAME + ";" + currentUserList->user->USER_EMAIL + ";" 
-						+ currentUserList->user->USER_DOB + ";" + currentUserList->user->USER_ADDRESS + ";" 
-						+ currentUserList->user->USER_REG_DATE + ";" + currentUserList->user->USER_REFERENCENUMBER +"}";
+			if (currentUserList->user) {
+				firstpart = "{" + std::to_string(currentUserList->user->USER_ID) + ";" + std::to_string(currentUserList->user->isAdmin) + ";" + std::to_string(currentUserList->user->isEmployer) + ";"
+					+ currentUserList->user->USER_NAME + ";" + currentUserList->user->USER_PASSWORD + ";"
+					+ currentUserList->user->USER_FULL_NAME + ";" + currentUserList->user->USER_EMAIL + ";"
+					+ currentUserList->user->USER_DOB + ";" + currentUserList->user->USER_ADDRESS + ";"
+					+ currentUserList->user->USER_REG_DATE + ";" + currentUserList->user->USER_REFERENCENUMBER + "}";
 
-			info = firstpart;
-			
-			file << info << std::endl;
-			
+				info = firstpart;
+
+				file << info << std::endl;
+			}
 			if (currentUserList->next != NULL) {
 				currentUserList = currentUserList->next;
 			}
@@ -51,6 +52,28 @@
 		
 		file.close();
 		std::cout << std::endl << "User data is saved!" << std::endl;
+	}
+
+	void User::clearList() {
+
+		UserList* list;
+		UserData* listData;
+		while (headerUserList) {
+
+			if (headerUserList->next != NULL) {
+				list = headerUserList;
+				listData = headerUserList->user;
+				headerUserList = headerUserList->next;
+				delete listData;
+				delete list;
+				listData = NULL;
+				list = NULL;
+			}
+			else {
+				return;
+			}
+		}
+
 	}
 
 	bool User::login() {
@@ -94,6 +117,11 @@
 				}
 			}
 		}
+	}
+
+	void User::logout() {
+
+		delete currentUser;
 	}
 
 	void User::loadUserInfoFromDatabaseToList() {
@@ -173,6 +201,7 @@
 		newUser->user->USER_COMPANIES = NULL;
 		newUser->user->USER_PROMOTION = NULL;
 		newUser->user->USER_SERVICES = NULL;
+		newUser->user->USER_JOBS = NULL;
 
 		if (headerUserList->user == NULL) {//first load
 			delete usersList;
@@ -236,7 +265,6 @@
 		}
 
 		saveUserInfoToDatabase();
-		loadUserInfoFromDatabaseToList();
 		system("pause");
 		system("cls");
 
@@ -244,17 +272,17 @@
 	}
 
 
-    void User::viewCurrentUserInfo(UserData* ){
+    void User::viewCurrentUserInfo(UserData* selectedUser){
 
 		std::cout << std::endl<<std::endl; 
 		std::cout << "============ Profile Info ============" << std::endl;
-		std::cout << "User ID:  " << currentUser->USER_ID << std::endl;
-        std::cout << "Full Name:  " << currentUser->USER_FULL_NAME << std::endl;
-        std::cout << "Email Address: " << currentUser->USER_EMAIL << std::endl;
-        std::cout << "Date of Birth: " << currentUser->USER_DOB << std::endl;
-        std::cout << "Street Address: " << currentUser->USER_ADDRESS << std::endl;
-		std::cout << "Username: " << currentUser->USER_NAME << std::endl;
-        std::cout << "Registration Date: " << currentUser->USER_REG_DATE << std::endl;   
+		std::cout << "User ID:  " << selectedUser->USER_ID << std::endl;
+        std::cout << "Full Name:  " << selectedUser->USER_FULL_NAME << std::endl;
+        std::cout << "Email Address: " << selectedUser->USER_EMAIL << std::endl;
+        std::cout << "Date of Birth: " << selectedUser->USER_DOB << std::endl;
+        std::cout << "Street Address: " << selectedUser->USER_ADDRESS << std::endl;
+		std::cout << "Username: " << selectedUser->USER_NAME << std::endl;
+        std::cout << "Registration Date: " << selectedUser->USER_REG_DATE << std::endl;   
 		std::cout << "============ Profile Info ============" << std::endl << std::endl;
 
     }
@@ -326,23 +354,23 @@
 		newUser->user->USER_SERVICES = NULL;
 		newUser->user->USER_JOBS = NULL;
 		newUser->user->isAdmin = false;
+		newUser->user->isEmployer = true;
 		newUser->user->USER_ID = generateID();
-		std::cout << "\nTo register yellow pages system, you must subscribes." << std::endl;
+		std::cout << "\nTo register yellow pages system, you must subscribe." << std::endl;
 
-		while (true) {
-			Payment payMenu;
-			std::cout << "\n****************************************** List of deals ******************************************\n" << std::endl;
-			std::cout << "\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
-			std::cout << "***************************************************************************************************\n\n";
-			std::cout << "___________________________________________________________________________________________________\n\n";
-			std::cout << "\t\tInsert a number of deals you wants to know more , (1/2/3)\n\t\tInsert any other number to continue or cancel the payment : ";
-			std::cin >> viewdeal;
-			payMenu.viewDeals(viewdeal);
-			std:: cout<< "Enter reference number : ";
-			std::cin.ignore();
-			std::cin >> newUser->user->USER_REFERENCENUMBER;
-		}
-
+			
+		std::cout << "\n******************* One time payment *******************\n" << std::endl;
+		std::cout << "\t1. One time payment = RM 49.90 ";
+		std::cout << std::endl;
+		std::cout << "\tBenefits: Able to post, view and search for companies, services, jobs and promotions!" << std::endl;;
+		std::cout << "***********************************************************\n\n";
+		std::cout << "_______________________________________________________\n\n";
+		system("pause");
+		Payment payMenu;
+		std:: cout<< "Enter reference number : ";
+		std::cin.ignore();
+		std::cin >> newUser->user->USER_REFERENCENUMBER;
+		std::cin.ignore();
 		std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
 		checkValidInput(newUser->user->USER_NAME);
 		checkIfUserExist(newUser->user->USER_NAME);
@@ -368,7 +396,6 @@
 
 		currentUser = newUser->user;
 		saveUserInfoToDatabase();
-		loadUserInfoFromDatabaseToList();
 		system("pause");
 		system("cls");
 
@@ -378,12 +405,15 @@
 	void User::userMenu() 
 	{
 		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" Please enter your choice."<< std::endl;
-		std::cout << "1.	Update Profile" << std::endl;
-		std::cout << "2.	View Company Profile" << std::endl;
-		std::cout << "3.	View Jobs Posted" << std::endl;
-		std::cout << "4.	View Services Posted" << std::endl;
-		std::cout << "5.	View Promotion Posted" << std::endl;
-		std::cout << "6.	Logout" << std::endl;
+		std::cout << "0. Logout" << std::endl;
+		std::cout << "1. Update Profile" << std::endl;
+		std::cout << "2. Company Management" << std::endl;
+		std::cout << "3. Job Management" << std::endl;
+		std::cout << "4. Service Management" << std::endl;
+		std::cout << "5. Promotion Management" << std::endl;
+		if (currentUser->isAdmin) {
+			std::cout << "6. User Management" << std::endl;
+		}
 	}
 	  
 	void User::guest() {
@@ -442,7 +472,7 @@
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << std::endl << std::endl;
 
 				if (headerUserList->user == NULL) {
 					std::cout << "No Users in database. Please create one." << std::endl;
@@ -542,7 +572,7 @@
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << std::endl << std::endl;
 
 				if (headerUserList->user == NULL) {
 					std::cout << "No Users in database. Please create one." << std::endl;
@@ -641,7 +671,7 @@
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "User ID\t| " << "User Name\t|" << "Reference Number" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << std::endl << std::endl;
 
 				if (headerUserList->user == NULL) {
 					std::cout << "No users in database. Please create one." << std::endl;
@@ -745,7 +775,7 @@
 				else {
 					system("cls");
 					std::cout << "===================== Results =====================" << std::endl;
-					std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
+					std::cout << "User ID\t| " << "User Name\t|" << std::endl << std::endl;
 					while (currentUserList->user != NULL) {
 						if (searchedUser == NULL) {
 							headerforCurrentList = currentUserList;
@@ -843,7 +873,7 @@
 
 	void User::viewUserBrief(UserData* currentUser) {
 
-		std::cout << currentUser->USER_ID << "\t" << currentUser->USER_NAME << "\t" << currentUser->USER_REFERENCENUMBER << std::endl;
+		std::cout << currentUser->USER_ID << "\t" << currentUser->USER_NAME << std::endl;
 	}
 
 	void User::editCurrentUser(UserData* currentUser, UserData* selectedUser) {
@@ -876,7 +906,10 @@
 			}
 			case 1: {
 				std::cin.ignore();
-				std::cout << "Enter new Username: "; std::getline(std::cin, selectedUser->USER_NAME);
+				std::string input;
+				std::cout << "Enter new Username: "; std::getline(std::cin, input);
+				checkIfUserExist(input);
+				selectedUser->USER_NAME = input;
 				break;
 			}
 			case 2: {
@@ -928,7 +961,6 @@
 
 		} while (selected_id);
 		saveUserInfoToDatabase();
-		loadUserInfoFromDatabaseToList();
 	}
 
 	void User::deleteCurrentUser(UserData* currentUser, UserData* selectedUser) {
@@ -939,7 +971,6 @@
 		std::cout << "Selected User has been deleted" << std::endl;
 
 		saveUserInfoToDatabase();
-		loadUserInfoFromDatabaseToList();
 
 		return;
 

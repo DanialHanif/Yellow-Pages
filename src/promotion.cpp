@@ -25,13 +25,14 @@ void Promotion::savePromotionListToDatabase(){
 
 	while (true) {
 
-		firstpart = "{" + std::to_string(currentPromotionList->promotion->PROMOTION_ID) + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_OWNERID) + ";" + currentPromotionList->promotion->PROMOTION_NAME + ";" + currentPromotionList->promotion->PROMOTION_DESCRIPTION
-						+ ";" + currentPromotionList->promotion->PROMOTION_POSTING_DATE + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_PRICE) + "}";
+		if (currentPromotionList->promotion) {
+			firstpart = "{" + std::to_string(currentPromotionList->promotion->PROMOTION_ID) + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_OWNERID) + ";" + currentPromotionList->promotion->PROMOTION_NAME + ";" + currentPromotionList->promotion->PROMOTION_DESCRIPTION
+				+ ";" + currentPromotionList->promotion->PROMOTION_POSTING_DATE + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_PRICE) + "}";
 
-		info = firstpart;
+			info = firstpart;
 
-		file << info << std::endl;
-
+			file << info << std::endl;
+		}
 		if (currentPromotionList->next != NULL) {
 			currentPromotionList = currentPromotionList->next;
 		}
@@ -44,12 +45,29 @@ void Promotion::savePromotionListToDatabase(){
 
 	file.close();
 	std::cout << std::endl << "Promotion data is saved!" << std::endl;
-	delete promotionList;
-	promotionList = new PromotionList;
-	promotionList->promotion = NULL;
-	promotionList->next = NULL;
-	headerPromotionList = promotionList;
-	loadPromotionListFromDatabase();
+
+}
+
+void Promotion::clearList() {
+
+	PromotionList* list;
+	PromotionData* listData;
+	while (headerPromotionList) {
+
+		if (headerPromotionList->next != NULL) {
+			list = headerPromotionList;
+			listData = headerPromotionList->promotion;
+			headerPromotionList = headerPromotionList->next;
+			delete listData;
+			delete list;
+			listData = NULL;
+			list = NULL;
+		}
+		else {
+			return;
+		}
+	}
+
 }
 
 void Promotion::loadPromotionListFromDatabase() {
@@ -150,7 +168,7 @@ void Promotion::addPromotionDataFromDBToList(std::queue<std::string> promotionDa
 
 void Promotion::viewPromotion(UserData* currentUser) {
 
-	
+	PromotionList* headerforCurrentList;
 	if (headerPromotionList->promotion == NULL) {
 		std::cout << "No Promotion in database. Please create one.";
 		return;
@@ -174,6 +192,7 @@ void Promotion::viewPromotion(UserData* currentUser) {
 						break;
 					}
 				}
+				goto done;
 				std::cout << "=========================================================" << std::endl;
 				break;
 			}
@@ -185,6 +204,7 @@ void Promotion::viewPromotion(UserData* currentUser) {
 					//add matches to user companies
 					if (currentUser->USER_PROMOTION == NULL) {
 						currentUser->USER_PROMOTION = currentPromotionList;
+						headerforCurrentList = currentUser->USER_PROMOTION;
 						break;
 					}
 					else if (currentUser->USER_PROMOTION != NULL && currentUser->USER_PROMOTION->next == NULL) {
@@ -203,7 +223,56 @@ void Promotion::viewPromotion(UserData* currentUser) {
 				currentPromotionList = currentPromotionList->next;
 			}
 			else {
-				std::cout << "=========================================================" << std::endl;
+				done:
+				int selected_id;
+
+				std::cout << "\n=========================================================" << std::endl;
+
+
+				std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
+				currentPromotionList = headerforCurrentList;
+				std::cin >> selected_id;
+
+				switch (selected_id) {
+
+				case 0: {
+					break;
+				}
+				case 1: {
+					std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+
+					while (true) {
+						if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
+							currentPromotion = currentPromotionList->promotion;
+							break;
+						}
+						else if (currentPromotionList->next == NULL) {
+							std::cout << "No promotion with the selected id is found!" << std::endl;
+							return;
+						}
+						else {
+							currentPromotionList = currentPromotionList->next;
+						}
+					}
+
+					viewCurrentPromotionInfo(currentPromotion);
+					std::cout << "[0]Back ";
+					if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
+						std::cout << "[1]Edit " << std::endl;
+					}
+					std::cin >> selected_id;
+					if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
+						editCurrentPromotion(currentUser, currentPromotion);
+					}
+
+					else {
+						break;
+					}
+				}
+				default: {
+					break;
+				}
+				}
 				break;
 			}
 
@@ -295,6 +364,18 @@ void Promotion::addPromotion(UserData* currentUser) {
 
 		else {
 
+			PromotionList* current = headerPromotionList;
+			while (current) {
+				if (current->next == NULL) { current->next = newPromotion; return; }
+
+				else {
+					current = current->next;
+				}
+			}
+		}
+
+		/*else {
+
 			currentPromotionList = headerPromotionList;
 			while (currentPromotionList) {
 				if (currentUser->isEmployer) {
@@ -307,10 +388,11 @@ void Promotion::addPromotion(UserData* currentUser) {
 					currentPromotionList = currentPromotionList->next;
 				}
 			}
-		}
+		}*/
 
 		savePromotionListToDatabase();
 		viewPromotion(currentUser);
+		system("Pause");
 }
 
 void Promotion::editPromotion(UserData* currentUser){
@@ -435,7 +517,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 		std::cout << "1. Search by Promotion ID" << std::endl;
 		std::cout << "2. Search by Name" << std::endl;
 		std::cout << "3. Search by Keyword" << std::endl;
-		std::cout << "4. View All Companies" << std::endl;
+		std::cout << "4. View All Promotions" << std::endl;
 		std::cout << "0. Exit Search" << std::endl;
 		std::cout << "\n\tChoice : ";
 		std::cin >> selected_id;
@@ -660,7 +742,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 				}
 				else {
 					while (currentPromotionList->promotion != NULL) {
-						if (currentPromotionList->promotion->PROMOTION_DESCRIPTION.find(keyword) != std::string::npos) {
+						if ((currentPromotionList->promotion->PROMOTION_DESCRIPTION.find(keyword) != std::string::npos) || currentPromotionList->promotion->PROMOTION_NAME.find(keyword) != std::string::npos) {
 							if (currentPromotion == NULL) {
 								headerforCurrentList = currentPromotionList;
 							}
@@ -926,7 +1008,7 @@ void Promotion::editCurrentPromotion(UserData* currentUser, PromotionData* selec
 
 	} while (selected_id);
 	savePromotionListToDatabase();
-	loadPromotionListFromDatabase();
+
 }
 
 void Promotion::deleteCurrentPromotion(UserData* currentUser, PromotionData* selectedPromotion) {
@@ -937,7 +1019,7 @@ void Promotion::deleteCurrentPromotion(UserData* currentUser, PromotionData* sel
 	std::cout << "Selected Promotion has been deleted" << std::endl;
 
 	savePromotionListToDatabase();
-	loadPromotionListFromDatabase();
+
 
 	return;
 

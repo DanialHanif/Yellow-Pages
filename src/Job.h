@@ -40,6 +40,8 @@ public:
 	void editCurrentJob(UserData*, JobData*);
 	void deleteCurrentJob(UserData*, JobData*);
 
+	void clearList();
+
 };
 
 #endif // !JOB_H

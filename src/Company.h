@@ -42,6 +42,8 @@ class Company {
 		void deleteCurrentCompany(UserData*, CompanyData*);//delete current selected company
 		//void viewCompanyguest();//for guest
 
+		void clearList();
+
 };
 
 #endif // !COMPANY_H

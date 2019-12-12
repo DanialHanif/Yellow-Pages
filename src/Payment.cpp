@@ -171,13 +171,13 @@ void Payment::OnlineBanking()
 
 void Payment::payment()
 {
-	cout<<"\n***************************************************************************************************\n";
+	/*cout<<"\n***************************************************************************************************\n";
 	cout<<"\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
-	cout<<"Enter number of deals (1/2/3):";
+	cout<<"Enter number of deals (1/2/3):";*/
 	
-	int pay;
+	/*int pay;
 	cin>>pay;
-	while(pay<1||pay>3)
+	/*while(pay<1||pay>3)
 	{
 		system("cls");
 		cout<<"\n\t\tWrong number!!";
@@ -201,15 +201,15 @@ void Payment::payment()
 	{
 		cout<<"\n\tYou are choosing Deluxe deal ^_^\n";
 		cout<<"\tYou may pay RM 149.90";
-	}
+	}*/
 	
-	cout<<"\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+	cout<<"\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
 	cout<<"\n\n\tWhich payment method do you prefer?\n";
 	cout<<"\t1.Online transfer(internet banking)\n\t2.Cash transfer(ATM)\n\n*you may"
 		<<" insert 3 if you need trusted agent consultation about payment\n\n\tPayment Method (1/2/3): ";
 	int PaymentMethod;
 	cin>>PaymentMethod;
-	while(pay<1||pay>3)
+	while(PaymentMethod <1|| PaymentMethod>3)
 	{
 		cout<<"\t\tWrong number!!";
 		cout<<"\n\tWhich payment method do you prefer?\n\n";
@@ -222,6 +222,8 @@ void Payment::payment()
 	if(PaymentMethod==1)
 	{
 		OnlineBanking();
+		system("pause");
+		return;
 	}
 	else if(PaymentMethod==2)
 	{
@@ -232,12 +234,16 @@ void Payment::payment()
 		cout<<"\n\n*Snap your resit and sent to our staff\n\n";
 		char phone[100]="https://wa.me/601111425342";
 		ShellExecute(NULL, "open", phone, NULL, NULL, SW_SHOWNORMAL);
+		system("pause");
+		return;
 	}
 	else
 	{
 		cout<<"\nYou may contact our staff\n";
 		char phones[100]="https://wa.me/601111425342";
 		ShellExecute(NULL, "open", phones, NULL, NULL, SW_SHOWNORMAL);
+		system("pause");
+		return;
 	}
 	
 }
@@ -246,7 +252,7 @@ void Payment::viewDeals(int deal)
 {
 	switch(deal)
 	{
-		case 1: cout<<"################################ Advantages of choosing Essential ################################\n\n";
+	/*	case 1: cout<<"################################ Advantages of choosing Essential ################################\n\n";
 		
 				cout<<"1.Business presence\t~~Business Listing in e-Directory\n\t\t\t~~5 Images and 1 Logo in e-Directory\n";
 				cout<<"\t\t\t~~10 Keywords\n\t\t\t~~Web Builder with unlimited pages\n\t\t\t~~Over 20+ website theme /template ";
@@ -291,7 +297,7 @@ void Payment::viewDeals(int deal)
 				
 				cout<<"6.Business marketing\t~~FB or Google Ads Campaigns\n\t\t\t~~Flexible Campaign Ads format\n\n\n";
 				break;
-		
+	*/	
 		default:
 		
 				cout<<"\n\t\tProceed to payment ? (y/n) : ";
@@ -330,7 +336,7 @@ void Payment::viewDeals(int deal)
 					{ 
 						system("cls");
 						cout<<"\n***************************************************************************************************\n";
-						cout<<"\t\t\tYour deal's cancellation successful ^_^\n\t\t\tHope to see you again on our page next time....";
+						cout<<"\t\t\tYour payment's cancellation successful ^_^\n\t\t\tHope to see you again on our page next time....";
 						cout<<"\n\n\t\t\tThank you !!";
 						cout<<"\n***************************************************************************************************\n";
 						return; 

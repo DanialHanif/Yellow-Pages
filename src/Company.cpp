@@ -25,7 +25,7 @@ void Company::saveCompanyListToDatabase(){
 
 	while (true) {
 
-		if (currentCompanyList->company != NULL) {
+		if (currentCompanyList->company) {
 			firstpart = "{" + std::to_string(currentCompanyList->company->COMPANY_ID) + ";" + std::to_string(currentCompanyList->company->COMPANY_OWNERID) + ";" + currentCompanyList->company->COMPANY_NAME + ";" + currentCompanyList->company->COMPANY_DESCRIPTION
 				+ ";" + currentCompanyList->company->COMPANY_EMAIL + ";" + currentCompanyList->company->COMPANY_CONTACTNUMBER + ";" + currentCompanyList->company->COMPANY_WEBSITE + ";" + currentCompanyList->company->COMPANY_REGISTRATION_DATE + "}";
 
@@ -45,12 +45,29 @@ void Company::saveCompanyListToDatabase(){
 
 	file.close();
 	std::cout << std::endl << "Company data is saved!" << std::endl;
-	delete companyList;
-	companyList = new CompanyList;
-	companyList->company = NULL;
-	companyList->next = NULL;
-	headerCompanyList = companyList;
-	loadCompanyListFromDatabase();
+
+}
+
+void Company::clearList() {
+
+	CompanyList* list;
+	CompanyData* listData;
+	while (headerCompanyList) {
+
+		if (headerCompanyList->next != NULL) {
+			list = headerCompanyList;
+			listData = headerCompanyList->company;
+			headerCompanyList = headerCompanyList->next;
+			delete listData;
+			delete list;
+			listData = NULL;
+			list = NULL;
+		}
+		else {
+			return;
+		}
+	}
+
 }
 
 void Company::loadCompanyListFromDatabase() {
@@ -110,6 +127,7 @@ void Company::loadCompanyListFromDatabase() {
 
 void Company::addCompanyDataFromDBToList(std::queue<std::string> companyDataContainer) {
 
+	
 	CompanyList* newCompany = new CompanyList;
 	newCompany->company = new CompanyData;
 	newCompany->company->COMPANY_ID = stoi(companyDataContainer.front()); companyDataContainer.pop();
@@ -146,7 +164,7 @@ void Company::addCompanyDataFromDBToList(std::queue<std::string> companyDataCont
 
 void Company::viewCompany(UserData* currentUser) {
 
-	
+	CompanyList* headerforCurrentList;
 	if (headerCompanyList->company == NULL) {
 		std::cout << "No Company in database. Please create one.";
 		return;
@@ -170,7 +188,7 @@ void Company::viewCompany(UserData* currentUser) {
 						break;
 					}
 				}
-				std::cout << "=========================================================" << std::endl;
+				goto done;
 				break;
 			}
 			//iterate through company list until reach first match
@@ -181,6 +199,7 @@ void Company::viewCompany(UserData* currentUser) {
 					//add matches to user companies
 					if (currentUser->USER_COMPANIES == NULL) {
 						currentUser->USER_COMPANIES = currentCompanyList;
+						headerforCurrentList = currentUser->USER_COMPANIES;
 						break;
 					}
 					else if (currentUser->USER_COMPANIES != NULL && currentUser->USER_COMPANIES->next == NULL) {
@@ -199,7 +218,56 @@ void Company::viewCompany(UserData* currentUser) {
 				currentCompanyList = currentCompanyList->next;
 			}
 			else {
+				done:
+
 				std::cout << "=========================================================" << std::endl;
+				int selected_id;
+
+				std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+				
+				std::cin >> selected_id;
+
+				switch (selected_id) {
+
+				case 0: {
+					break;
+				}
+				case 1: {
+					std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+
+					while (true) {
+						if (currentCompanyList->company->COMPANY_ID == selected_id) {
+							currentCompany = currentCompanyList->company;
+							break;
+						}
+						else if (currentCompanyList->next == NULL) {
+							std::cout << "No company with the selected id is found!" << std::endl;
+							return;
+						}
+						else {
+							currentCompanyList = currentCompanyList->next;
+						}
+					}
+
+					viewCurrentCompanyInfo(currentCompany);
+					std::cout << "[0]Back ";
+					if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
+						std::cout << "[1]Edit " << std::endl;
+					}
+					std::cin >> selected_id;
+					if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+						editCurrentCompany(currentUser, currentCompany);
+					}
+
+					else {
+						break;
+					}
+				}
+				default: {
+					break;
+				}
+				}
+
 				break;
 			}
 
@@ -293,6 +361,18 @@ void Company::addCompany(UserData* currentUser) {
 
 		else {
 
+			CompanyList* current = headerCompanyList;
+			while (current) {
+				if (current->next == NULL) { current->next = newCompany; return; }
+
+				else {
+					current = current->next;
+				}
+			}
+		}
+
+		/*else {
+
 			currentCompanyList = headerCompanyList;
 			while (currentCompanyList) {
 				if (currentUser->isEmployer) {
@@ -305,10 +385,11 @@ void Company::addCompany(UserData* currentUser) {
 					currentCompanyList = currentCompanyList->next;
 				}
 			}
-		}
+		}*/
 
 		saveCompanyListToDatabase();
 		viewCompany(currentUser);
+		system("Pause");
 }
 
 void Company::editCompany(UserData* currentUser){
@@ -661,7 +742,7 @@ void Company::searchCompany(UserData* currentUser) {
 				}
 				else {
 					while (currentCompanyList->company != NULL) {
-						if (currentCompanyList->company->COMPANY_DESCRIPTION.find(keyword) != std::string::npos) {
+						if ((currentCompanyList->company->COMPANY_DESCRIPTION.find(keyword) != std::string::npos) || (currentCompanyList->company->COMPANY_NAME.find(keyword) != std::string::npos)) {
 							if (currentCompany == NULL) {
 								headerforCurrentList = currentCompanyList;
 							}
@@ -950,10 +1031,10 @@ void Company::editCurrentCompany(UserData* currentUser, CompanyData* selectedCom
 
 	} while (selected_id);
 	saveCompanyListToDatabase();
-	loadCompanyListFromDatabase();
 }
 
 void Company::deleteCurrentCompany(UserData* currentUser, CompanyData* selectedCompany) {
+
 
 	delete selectedCompany;
 	selectedCompany = NULL;
@@ -961,7 +1042,6 @@ void Company::deleteCurrentCompany(UserData* currentUser, CompanyData* selectedC
 	std::cout << "Selected Company has been deleted" << std::endl;
 
 	saveCompanyListToDatabase();
-	loadCompanyListFromDatabase();
 
 	return;
 

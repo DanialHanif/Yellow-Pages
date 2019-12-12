@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Company.cpp" />
+    <ClCompile Include="src\Job.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Payment.cpp" />
     <ClCompile Include="src\Promotion.cpp" />

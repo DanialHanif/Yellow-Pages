@@ -25,14 +25,15 @@ void Service::saveServiceListToDatabase(){
 
 	while (true) {
 
-		firstpart = "{" + std::to_string(currentServiceList->service->SERVICE_ID) + ";" + std::to_string(currentServiceList->service->SERVICE_OWNERID) + ";" + currentServiceList->service->SERVICE_NAME + ";"
-						+ currentServiceList->service->SERVICE_DESCRIPTION + ";" + currentServiceList->service->SERVICE_CONTACTNUMBER + ";" + currentServiceList->service->SERVICE_COMPANY + ";"
-						+ currentServiceList->service->SERVICE_WEBSITE + ";"+ currentServiceList->service->SERVICE_POSTING_DATE +";" + std::to_string(currentServiceList->service->SERVICE_PRICE) + "}";
+		if (currentServiceList->service) {
+			firstpart = "{" + std::to_string(currentServiceList->service->SERVICE_ID) + ";" + std::to_string(currentServiceList->service->SERVICE_OWNERID) + ";" + currentServiceList->service->SERVICE_NAME + ";"
+				+ currentServiceList->service->SERVICE_DESCRIPTION + ";" + currentServiceList->service->SERVICE_CONTACTNUMBER + ";" + currentServiceList->service->SERVICE_COMPANY + ";"
+				+ currentServiceList->service->SERVICE_WEBSITE + ";" + currentServiceList->service->SERVICE_POSTING_DATE + ";" + std::to_string(currentServiceList->service->SERVICE_PRICE) + "}";
 
-		info = firstpart;
+			info = firstpart;
 
-		file << info << std::endl;
-
+			file << info << std::endl;
+		}
 		if (currentServiceList->next != NULL) {
 			currentServiceList = currentServiceList->next;
 		}
@@ -45,12 +46,29 @@ void Service::saveServiceListToDatabase(){
 
 	file.close();
 	std::cout << std::endl << "Service data is saved!" << std::endl;
-	delete serviceList;
-	serviceList = new ServiceList;
-	serviceList->service = NULL;
-	serviceList->next = NULL;
-	headerServiceList = serviceList;
-	loadServiceListFromDatabase();
+
+}
+
+void Service::clearList() {
+
+	ServiceList* list;
+	ServiceData* listData;
+	while (headerServiceList) {
+
+		if (headerServiceList->next != NULL) {
+			list = headerServiceList;
+			listData = headerServiceList->service;
+			headerServiceList = headerServiceList->next;
+			delete listData;
+			delete list;
+			listData = NULL;
+			list = NULL;
+		}
+		else {
+			return;
+		}
+	}
+
 }
 
 void Service::loadServiceListFromDatabase() {
@@ -154,7 +172,7 @@ void Service::addServiceDataFromDBToList(std::queue<std::string> serviceDataCont
 
 void Service::viewService(UserData* currentUser) {
 
-	
+	ServiceList* headerforCurrentList;
 	if (headerServiceList->service == NULL) {
 		std::cout << "No Service in database. Please create one.";
 		return;
@@ -163,13 +181,13 @@ void Service::viewService(UserData* currentUser) {
 		system("cls");
 		std::cout << "===================== Service Lists =====================" << std::endl;
 		std::cout << "Service ID\t| " << "Owner ID\t| " << "Service Name" << std::endl;
-		
+
 		currentServiceList = headerServiceList;
 		while (currentServiceList->service != NULL) {
 
 			if (currentUser->isAdmin == true) {
 				while (currentServiceList->service != NULL) {
-		
+
 					std::cout << currentServiceList->service->SERVICE_ID << "\t" << currentServiceList->service->SERVICE_OWNERID << "\t" << currentServiceList->service->SERVICE_NAME << std::endl;
 					if (currentServiceList->next != NULL) {
 						currentServiceList = currentServiceList->next;
@@ -178,6 +196,7 @@ void Service::viewService(UserData* currentUser) {
 						break;
 					}
 				}
+				goto done;
 				std::cout << "=========================================================" << std::endl;
 				break;
 			}
@@ -185,10 +204,11 @@ void Service::viewService(UserData* currentUser) {
 			else if (currentServiceList->service->SERVICE_OWNERID == currentUser->USER_ID) {
 				std::cout << currentServiceList->service->SERVICE_ID << "\t" << currentServiceList->service->SERVICE_OWNERID << "\t" << currentServiceList->service->SERVICE_NAME << std::endl;
 				while (currentServiceList->service != NULL) {
-										
+
 					//add matches to user companies
 					if (currentUser->USER_SERVICES == NULL) {
 						currentUser->USER_SERVICES = currentServiceList;
+						headerforCurrentList = currentUser->USER_SERVICES;
 						break;
 					}
 					else if (currentUser->USER_SERVICES != NULL && currentUser->USER_SERVICES->next == NULL) {
@@ -201,20 +221,73 @@ void Service::viewService(UserData* currentUser) {
 						break;
 					}
 				}
-				
+
 			}
 			if (currentServiceList->next != NULL) {
 				currentServiceList = currentServiceList->next;
 			}
 			else {
-				std::cout << "=========================================================" << std::endl;
-				break;
+				done:
+				int selected_id;
+
+				std::cout << "\n=========================================================" << std::endl;
+
+
+				std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
+				currentServiceList = headerforCurrentList;
+				std::cin >> selected_id;
+
+				switch (selected_id) {
+
+				case 0: {
+					system("cls");
+					break;
+				}
+				case 1: {
+					do {
+						std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+
+						while (currentServiceList->service != NULL) {
+							if (currentServiceList->service->SERVICE_ID == selected_id) {
+								currentService = currentServiceList->service;
+								break;
+							}
+							else if (currentServiceList->next == NULL) {
+								std::cout << "No service with the selected id is found!" << std::endl;
+								break;
+							}
+							else {
+								currentServiceList = currentServiceList->next;
+							}
+						}
+						if (currentService != NULL) {
+							break;
+						}
+					} while (selected_id);
+					if (currentService != NULL) {
+						viewCurrentServiceInfo(currentService);
+						std::cout << "[0]Back ";
+						if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
+							std::cout << "[1]Edit " << std::endl;
+						}
+						std::cin >> selected_id;
+						if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
+							editCurrentService(currentUser, currentService);
+						}
+
+						else {
+							break;
+						}
+					}
+				}
+					  break;
+				}
+
 			}
 
 		}
 
 	}
-	
 }
 
 void Service::checkValidInput(std::string& s) {
@@ -303,6 +376,18 @@ void Service::addService(UserData* currentUser) {
 
 		else {
 
+			ServiceList* current = headerServiceList;
+			while (current) {
+				if (current->next == NULL) { current->next = newService; return; }
+
+				else {
+					current = current->next;
+				}
+			}
+		}
+
+		/*else {
+
 			currentServiceList = headerServiceList;
 			while (currentServiceList) {
 				if (currentUser->isEmployer) {
@@ -315,10 +400,11 @@ void Service::addService(UserData* currentUser) {
 					currentServiceList = currentServiceList->next;
 				}
 			}
-		}
+		}*/
 
 		saveServiceListToDatabase();
 		viewService(currentUser);
+		system("Pause");
 }
 
 void Service::editService(UserData* currentUser){
@@ -619,7 +705,7 @@ void Service::searchService(UserData* currentUser) {
 				}
 				else {
 					while (currentServiceList->service != NULL) {
-						if (currentServiceList->service->SERVICE_DESCRIPTION.find(keyword) != std::string::npos) {
+						if (currentServiceList->service->SERVICE_COMPANY.find(keyword) != std::string::npos) {
 							if (currentService == NULL) {
 								headerforCurrentList = currentServiceList;
 							}
@@ -902,7 +988,6 @@ void Service::editCurrentService(UserData* currentUser, ServiceData* selectedSer
 
 	} while (selected_id);
 	saveServiceListToDatabase();
-	loadServiceListFromDatabase();
 }
 
 void Service::deleteCurrentService(UserData* currentUser, ServiceData* selectedService) {
@@ -913,7 +998,6 @@ void Service::deleteCurrentService(UserData* currentUser, ServiceData* selectedS
 	std::cout << "Selected Service has been deleted" << std::endl;
 
 	saveServiceListToDatabase();
-	loadServiceListFromDatabase();
 
 	return;
 

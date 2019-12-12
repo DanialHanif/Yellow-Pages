@@ -40,6 +40,8 @@ public:
 	void editCurrentService(UserData*, ServiceData*);
 	void deleteCurrentService(UserData*, ServiceData*);
 
+	void clearList();
+
 };
 
 #endif // !SERVICE_H

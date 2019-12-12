@@ -28,21 +28,12 @@ class User {
 
         User();
 
-		/*int getID();
-        std::string getUsername();
-        std::string getFullName();
-        std::string getEmailAddress();
-        std::string getDateOfBirth();
-        std::string getStreetAddress();
-        std::string getPassword();
-        std::string getRegistrationDate();
-		std::string hexEncodeInfo(std::string const&);
-		std::string decodeInfo(std::string const&);
-		std::string getSkillsStringForm();*/
+
 		UserData* getUserData();
 		UserList* getUsersList();
 
 		bool login();
+		void logout();
 		//void userMenu();
 
         void setup();
@@ -70,6 +61,8 @@ class User {
         
         void userMenu();
         void guest();
+
+        void clearList();
         
 
 };

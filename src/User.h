@@ -65,6 +65,7 @@ class User {
 		void checkIfUserExist(std::string&);
         void viewUsers();
         void viewCurrentUserInfo();
+        void userMenu();
         
 
 };

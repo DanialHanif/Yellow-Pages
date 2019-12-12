@@ -1,5 +1,3 @@
-//MUHAMMAD DANIAL AIMAN BIN MOHD HANIF BI18110242
-
 #include <iostream>
 #include "User.h"
 #include "Company.h"
@@ -273,8 +271,9 @@ void MainMenu() {
 		std::cout << "2) Login" << std::endl;
 		std::cout << "3) Login as Guest" << std::endl;
 		std::cout << "0) Exit" << std::endl;
-
+		std::cout << "\nChoice (eg. 1) : ";
 		std::cin >> choice;
+		std::cout << "\n";
 		switch (choice)
 		{
 		case 0:
@@ -282,32 +281,74 @@ void MainMenu() {
 
 		case 1:
 			{
-			User a;
-			a.setup();
-			a.viewCurrentUserInfo();
-			break; 
-		}
+				system("cls");
+				User a;
+				a.setup();
+				std::cout<< "You have successfully register\n\n";
+				a.viewCurrentUserInfo();
+				break; 
+			}
 
 		case 2:
 			{
-			User a;
-			//std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
+				User a;
+				//std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
 
-			if (a.login() == true) {
+				if (a.login() == true) 
+				{
+					system("cls");
+					a.viewCurrentUserInfo();
+					std::cout << "\n=========================================================\n\n";
+					a.userMenu();
+					int choiceMenu;
+					std::cout << "Choice : ";
+					std::cin >> choiceMenu;
+					system("cls");
 
-				std::cout << "Login success!" << std::endl;
+					switch (choiceMenu)
+					{
+						case 1: //to update data about user
+						{
+							a.viewCurrentUserInfo();
+							std::cout << "\nYou choose to update your personal data \n";
+							break;
+						}
+						case 2://view company
+						{
+							std::cout << "\nYou choose view Company \n\n";
+							Company companyObject;
+							//companyObject.addCompany(a.getUserData());
+							companyObject.searchCompany(a.getUserData());
+							break;
+						}
+						case 3://view job
+						{
+							break;
+						}
+						case 4://view service
+						{
+							break;
+						}
+						case 5://view promotion
+						{
+							break;
+						}
+						case 6://logout
+						{
+							std::cout << "You have been logout"<<std::endl;
+							break;
+						}
+						default://wrong entry
+						{
+							break;
+						}
+					}
 
-				a.viewCurrentUserInfo();
-				Company companyObject;
-				//companyObject.addCompany(a.getUserData());
-				companyObject.searchCompany(a.getUserData());
-				//a.newMenu();
-				//UserData* user = a.getUserData;
-
-			}
-			else {
-				break;
-			}
+				}
+				else 
+				{
+					break;
+				}
 
 			break;
 		}

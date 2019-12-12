@@ -394,12 +394,13 @@ void Company::searchCompany(UserData* currentUser) {
 		std::cout << "3. Search by Keyword" << std::endl;
 		std::cout << "4. View All Companies" << std::endl;
 		std::cout << "0. Exit Search" << std::endl;
-		
+		std::cout << "\n\tChoice : ";
 		std::cin >> selected_id;
 
 		switch (selected_id) {
 			case 0: {
 				std::cin.ignore();
+				system("cls");
 				return;
 			}
 			case 1: {
@@ -739,6 +740,7 @@ void Company::searchCompany(UserData* currentUser) {
 						switch (selected_id) {
 
 						case 0: {
+							system("cls");
 							break;
 						}
 						case 1: {
@@ -846,6 +848,7 @@ void Company::editCurrentCompany(UserData* currentUser, CompanyData* selectedCom
 
 		switch (selected_id) {
 		case 0: {
+			system("cls");
 			break;
 		}
 		case 1: {

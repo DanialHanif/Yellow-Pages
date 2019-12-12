@@ -356,7 +356,7 @@
 
     void User::viewCurrentUserInfo(){
 
-		std::cout << std::endl;
+		std::cout << std::endl<<std::endl; 
 		std::cout << "============ Profile Info ============" << std::endl;
 		std::cout << "User ID:  " << currentUser->USER_ID << std::endl;
         std::cout << "Full Name:  " << currentUser->USER_FULL_NAME << std::endl;
@@ -496,52 +496,14 @@
 		return;
     }
 
-	/*void User::userMenu() 
+	void User::userMenu() 
 	{
-		int choiceMenu;
 		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" please enter your choice."<< std::endl;
 		std::cout << "1.	Update data" << std::endl;
-		std::cout << "2.	Search services" << std::endl;
-		std::cout << "3.	Update services" << std::endl;
-		std::cout << "4.	Logout" << std::endl;
-		std::cout << "Choice : ";
-		std::cin >> choiceMenu;
-		switch (choiceMenu)
-		{
-		case 1 : //to update data about user
-		{
-
-			//std::cout << "Fill in the details:" << std::endl;
-			//std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
-			//checkValidInput(newUser->user->USER_NAME);
-			//checkIfUserExist(newUser->user->USER_NAME);
-			//std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
-			//std::cout << "Email Address: "; std::getline(std::cin, newUser->user->USER_EMAIL);
-			//std::cout << "Date of Birth (Day/Month/Year eg. 23/08/1998): "; std::getline(std::cin, newUser->user->USER_DOB); 
-			//std::cout << "Street Address: "; std::getline(std::cin, newUser->user->USER_ADDRESS);
-			//std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_PASSWORD);
-			//checkValidInput(newUser->user->USER_PASSWORD);
-			//newUser->user->USER_REG_DATE = registrationDate();
-			//saveUserInfoToDatabase();
-			//system("pause");
-			//system("cls");
-			//break;
-		}
-		case 2 ://search available services
-		{
-			break;
-		}
-		case 3://update service
-		{
-			break;
-		}
-		case 4://logout
-		{
-
-			break;
-		}
-		default:
-			break;
-		}
-	}*/
+		std::cout << "2.	View company" << std::endl;
+		std::cout << "3.	View jobs" << std::endl;
+		std::cout << "4.	View services" << std::endl;
+		std::cout << "5.	View promotion" << std::endl;
+		std::cout << "6.	Logout" << std::endl;
+	}
 	  

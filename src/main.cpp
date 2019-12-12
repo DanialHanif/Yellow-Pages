@@ -299,7 +299,7 @@ void MainMenu() {
 
 				a.viewCurrentUserInfo();
 				Company companyObject;
-				companyObject.addCompany(a.getUserData());
+				//companyObject.addCompany(a.getUserData());
 				companyObject.searchCompany(a.getUserData());
 				//a.newMenu();
 				//UserData* user = a.getUserData;

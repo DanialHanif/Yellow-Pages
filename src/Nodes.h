@@ -25,13 +25,14 @@ struct CompanyData {
 struct JobData {
 
 	int JOB_ID;
+	int JOB_OWNERID;
 	std::string JOB_NAME;
 	std::string JOB_DESCRIPTION;
 	std::string JOB_POSITION;
 	std::string JOB_CONTACTNUMBER;
 	std::string JOB_WEBSITE;
 	std::string JOB_COMPANY;
-	std::string POSTING_DATE;
+	std::string JOB_POSTING_DATE;
 	CompanyData* companyLink;
 
 };
@@ -39,12 +40,14 @@ struct JobData {
 struct ServiceData {
 
 	int SERVICE_ID;
+	int SERVICE_OWNERID;
 	std::string SERVICE_NAME;
 	std::string SERVICE_DESCRIPTION;
 	std::string SERVICE_CONTACTNUMBER;
 	std::string SERVICE_COMPANY;
 	std::string SERVICE_WEBSITE;
-	std::string POSTING_DATE;
+	std::string SERVICE_POSTING_DATE;
+	double SERVICE_PRICE;
 	CompanyData* companyLink;
 	ServiceData* next;
 

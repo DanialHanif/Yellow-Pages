@@ -59,13 +59,6 @@ void Company::loadCompanyListFromDatabase() {
 	std::ifstream companyDatabase("companyDB.dat");
 	std::string::size_type position = 0;
 
-	/*if (userDatabase.fail()) {
-		std::cout << "User Database is not found!" << std::endl;
-		std::cout << "Creating new user database..." << std::endl;
-		std::ofstream outputFile;
-		outputFile.open("userDB.dat", std::ios_base::app);
-		outputFile.close();
-	}*/
 
 	while (std::getline(companyDatabase, info)) {
 
@@ -206,13 +199,14 @@ void Company::viewCompany(UserData* currentUser) {
 				currentCompanyList = currentCompanyList->next;
 			}
 			else {
+				std::cout << "=========================================================" << std::endl;
 				break;
 			}
 
 		}
 
 	}
-	std::cout << "=========================================================" << std::endl;
+	
 }
 
 void Company::checkValidInput(std::string& s) {
@@ -437,11 +431,11 @@ void Company::searchCompany(UserData* currentUser) {
 		currentCompanyList = headerCompanyList;
 		currentCompany = NULL;
 
-		std::cout << "1. Search by Company ID" << std::endl;
-		std::cout << "2. Search by Name" << std::endl;
-		std::cout << "3. Search by Keyword" << std::endl;
-		std::cout << "4. View All Companies" << std::endl;
-		std::cout << "0. Exit Search" << std::endl;
+		std::cout << "[1] Search by Company ID" << std::endl;
+		std::cout << "[2] Search by Name" << std::endl;
+		std::cout << "[3] Search by Keyword" << std::endl;
+		std::cout << "[4] View All Companies" << std::endl;
+		std::cout << "[0] Exit Search" << std::endl;
 		std::cout << "\n\tChoice : ";
 		std::cin >> selected_id;
 
@@ -523,7 +517,7 @@ void Company::searchCompany(UserData* currentUser) {
 									currentCompanyList = currentCompanyList->next;
 								}
 							}
-
+							
 							viewCurrentCompanyInfo(currentCompany);
 							std::cout << "[0]Back ";
 							if (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID) {
@@ -531,12 +525,14 @@ void Company::searchCompany(UserData* currentUser) {
 							}
 							std::cin >> selected_id;
 							if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
+								system("cls");
 								editCurrentCompany(currentUser, currentCompany);
 							}
 
 							else {
 								break;
 							}
+							break;
 						}
 						default: {
 							break;
@@ -881,6 +877,7 @@ void Company::editCurrentCompany(UserData* currentUser, CompanyData* selectedCom
 	int selected_id;
 
 	do {
+		system("cls");
 		std::cout << "Selected Company to edit:" << std::endl;
 		viewCurrentCompanyInfo(selectedCompany);
 

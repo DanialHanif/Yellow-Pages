@@ -2,6 +2,8 @@
 #include "User.h"
 #include "Company.h"
 #include "Promotion.h"
+#include "Job.h"
+#include "Service.h"
 
 
 /*void loggedInMenu(User& a, bool& loggedin) {
@@ -238,7 +240,7 @@ void MainMenu() {
 	int choice;
 
 	do {
-		
+		User a;
 		std::cout << "+========================================================================+" << std::endl;
 		std::cout << "+                     Welcome to Yellow Pages system!                    +" << std::endl;
 		std::cout << "+    The yellow pages are any telephone directory of businesses          +" << std::endl;
@@ -263,92 +265,312 @@ void MainMenu() {
 				User a;
 				a.setup();
 				std::cout<< "You have successfully registered!\n\n";
-				a.viewCurrentUserInfo();
+				a.viewCurrentUserInfo(a.getUserData());
 				break; 
 			}
 
 		case 2:
 			{
-				User a;
-				//std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
 
-				if (a.login() == true) 
+
+			//std::cout << "isloggedin = " << std::boolalpha << a.login() << std::endl;
+
+			if (a.login() == true)
+			{
+				int choiceMenu;
+				do
 				{
 					system("cls");
-					a.viewCurrentUserInfo();
+					a.viewCurrentUserInfo(a.getUserData());
 					std::cout << "\n=========================================================\n\n";
 					a.userMenu();
-					int choiceMenu;
+
 					std::cout << "Choice : ";
 					std::cin >> choiceMenu;
 					system("cls");
 
 					switch (choiceMenu)
 					{
-						case 1: //to update data about user
-						{
-							a.viewCurrentUserInfo();
-							std::cout << "\nYou choose to update your personal data \n";
-							break;
-						}
-						case 2://view company
-						{
-							std::cout << "\nYou choose view Company \n\n";
-							Company companyObject;
-							//companyObject.addCompany(a.getUserData());
-							//companyObject.viewCompany(a.getUserData());
-							companyObject.searchCompany(a.getUserData());
-							break;
-						}
-						case 3://view job
-						{
-							break;
-						}
-						case 4://view service
-						{
-							break;
-						}
-						case 5://view promotion
-						{
-							Promotion promotionObject;
-							//companyObject.addCompany(a.getUserData());
-							//companyObject.viewCompany(a.getUserData());
-
-							//promotionObject.addPromotion(a.getUserData());
-							//promotionObject.searchPromotion(a.getUserData());
-							promotionObject.viewPromotion(a.getUserData());
-							break;
-						}
-						case 6://logout
-						{
-							std::cout << "You have been logout"<<std::endl;
-							break;
-						}
-						default://wrong entry
-						{
-							break;
-						}
+					case 1: //to update data about user
+					{
+						a.viewCurrentUserInfo(a.getUserData());
+						std::cout << "\nYou choose to update your personal data \n";
+						break;
 					}
+					case 2://view company
+					{
+						std::cout << "\nYou choose view Company \n\n";
+						system("pause");
+						Company companyObject;
+						int chooseCompany;
+						do
+						{ 
+							system("cls");
+							std::cout << "\n===================================================\n\n";
+							std::cout << "1.		Add company";
+							std::cout << "2.		View my company";
+							std::cout << "3.		Search company\n";
+							std::cout << "0.		Exit view company\n";
+							std::cout <<"\nChoice (eg. 1) : ";
+							
+					
+							std::cin >> chooseCompany;
+							switch (chooseCompany)
+							{
+							case 1:
+							{
+								companyObject.addCompany(a.getUserData());
+								break;
+							}
+							case 2:
+							{
+								companyObject.viewCompany(a.getUserData());
+								break;
+							}
+							case 3:
+							{
+								companyObject.searchCompany(a.getUserData());
+								break;
+							}
+							default:
+							{
+								std::cout << "Wrong entry !\nPlease enter again\n";
+							}
+							}
 
-				}
-				else 
-				{
-					break;
-				}
+						} while (chooseCompany != 0);
+						break;
+					}
+					case 3://view job
+					{
+						std::cout << "\nYou choose view Job \n\n";
+						system("pause");
+						Job jobObject;
+						int chooseJob;
+						do
+						{
+							system("cls");
+							std::cout << "\n===================================================\n\n";
+							std::cout << "1.		Add job";
+							std::cout << "2.		View my job";
+							std::cout << "3.		Search job\n";
+							std::cout << "0.		Exit view job\n";
+							std::cout << "\nChoice (eg. 1) : ";
+
+
+							std::cin >> chooseJob;
+							switch (chooseJob)
+							{
+							case 1:
+							{
+
+								jobObject.addJob(a.getUserData());
+								
+								break;
+							}
+							case 2:
+							{
+								jobObject.viewJob(a.getUserData());
+								break;
+							}
+							case 3:
+							{
+								jobObject.searchJob(a.getUserData());
+								break;
+							}
+							default:
+							{
+								std::cout << "Wrong entry !\nPlease enter again\n";
+							}
+							}
+
+						} while (chooseJob != 0);
+
+						break;
+					}
+					case 4://view service
+					{
+						std::cout << "\nYou choose view Service \n\n";
+						system("pause");
+						Service serObject;
+						int chooseSer;
+						do
+						{
+							system("cls");
+							std::cout << "\n===================================================\n\n";
+							std::cout << "1.		Add service";
+							std::cout << "2.		View my service";
+							std::cout << "3.		Search service\n";
+							std::cout << "0.		Exit view service\n";
+							std::cout << "\nChoice (eg. 1) : ";
+
+
+							std::cin >> chooseSer;
+							switch (chooseSer)
+							{
+							case 1:
+							{
+
+								serObject.addService(a.getUserData());
+								
+								break;
+							}
+							case 2:
+							{
+								serObject.viewService(a.getUserData());
+								break;
+							}
+							case 3:
+							{
+								serObject.searchService(a.getUserData());
+								break;
+							}
+							default:
+							{
+								std::cout << "Wrong entry !\nPlease enter again\n";
+							}
+							}
+
+						} while (chooseSer != 0);
+
+						break;
+					}
+					case 5://view promotion
+					{
+						std::cout << "\nYou choose view Promotion \n\n";
+						system("pause");
+						Promotion promoObject;
+						int choosePromo;
+						do
+						{
+							system("cls");
+							std::cout << "\n===================================================\n\n";
+							std::cout << "1.		Add promotion";
+							std::cout << "2.		View my promotion";
+							std::cout << "3.		Search promotion\n";
+							std::cout << "0.		Exit view promotion\n";
+							std::cout << "\nChoice (eg. 1) : ";
+
+
+							std::cin >> choosePromo;
+							switch (choosePromo)
+							{
+							case 1:
+							{
+
+								promoObject.addPromotion(a.getUserData());
+								
+								break;
+							}
+							case 2:
+							{
+								promoObject.viewPromotion(a.getUserData());
+								break;
+							}
+							case 3:
+							{
+								promoObject.searchPromotion(a.getUserData());
+								break;
+							}
+							default:
+							{
+								std::cout << "Wrong entry !\nPlease enter again\n";
+							}
+							}
+
+						} while (choosePromo != 0);
+
+						break;
+					}
+					case 6://logout
+					{
+						std::cout << "You have been logout" << std::endl;
+						break;
+					}
+					default://wrong entry
+					{
+						break;
+					}
+					}
+				}while (choiceMenu != 6);
+			}
+			else
+			{
+				std::cout << "\n\nUser not found ! Please login again\n\n";
+					system("cls");
+		
+			}
 
 			break;
 		}
 		case 3:
-			/*User a;
-			a.loginGuest();*/
-			break;
+		{
+			a.guest();
+			system("cls");
+			int guestChoose;
+			do
+			{
+				std::cout << "\t+================================================================+\n";
+				std::cout << "\tAs guest, you can only view without adding or editing our system\n";
+				std::cout << "\t1.	Search Companies" << std::endl;
+				std::cout << "\t2.	Search Jobs" << std::endl;
+				std::cout << "\t3.	Search Services" << std::endl;
+				std::cout << "\t4.	Search Promotion" << std::endl;
+				std::cout << "\t0.	Exit" << std::endl;
+				std::cout << "\t+================================================================+\n";
+				std::cout << "\n\tChoice (eg. 1) : ";
+				std::cin >> guestChoose;
+				std::cout << "\n\n\t----------------------------------------------------------------\n\n\n";
+				system("cls");
+				switch(guestChoose)
+				{
+					case 1:
+					{
+						Company companyObjects;
+						companyObjects.searchCompany(a.getUserData());
+						system("pause");
+						system("cls");
+						break;
+					}
+					case 2:
+					{
+						Job jobsObjects;
+						jobsObjects.searchJob(a.getUserData());
+						system("pause");
+						system("cls");
+						break;
+					}
+					case 3:
+					{
+						Service serviceObjects;
+						serviceObjects.searchService(a.getUserData());
+						system("pause");
+						system("cls");
+						break;
+					}
+					case 4:
+					{
+						Promotion promotionObjects;
+						promotionObjects.searchPromotion(a.getUserData());
+						system("pause");
+						system("cls");
+						break;
+					}
+					default:
+						break;
 
+				}
+			} while (guestChoose);
+			break;
+		}
 		default:
-			std::cout << "Please enter a valid choice!\n";
+			std::cout << "\tPlease enter a valid choice!\n";
 			system("pause");
 			system("cls");
 			break;
 		}
 	} while (choice);
+	system("pause");
+	system("cls");
 }
 

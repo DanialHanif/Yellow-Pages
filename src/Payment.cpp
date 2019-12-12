@@ -13,7 +13,7 @@ bool Payment::result() {
 
 void Payment::Description()
 {
-	cout<<"\n\t   _____________________________________\n";
+	cout<<"\n\t  _____________________________________\n";
 	cout<<"\t  |                                     |\n";
 	cout<<"\t  |This program will execute deals and  |\n";
 	cout<<"\t  |payment from Yellow Pages system..   |\n";

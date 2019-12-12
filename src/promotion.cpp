@@ -203,13 +203,14 @@ void Promotion::viewPromotion(UserData* currentUser) {
 				currentPromotionList = currentPromotionList->next;
 			}
 			else {
+				std::cout << "=========================================================" << std::endl;
 				break;
 			}
 
 		}
 
 	}
-	std::cout << "=========================================================" << std::endl;
+	
 }
 
 void Promotion::checkValidInput(std::string& s) {
@@ -368,7 +369,56 @@ void Promotion::editPromotion(UserData* currentUser){
 
 void Promotion::deletePromotion(UserData* currentUser){
 
+	currentPromotionList = headerPromotionList;
+	int selected_id;
+	currentPromotion = NULL;
+	std::cin.ignore();
+	if (currentUser->isAdmin || currentUser->isEmployer) {
 
+		std::cout << "Select Promotion ID:" << std::endl; std::cin >> selected_id;
+	}
+	else {
+		std::cout << "You don't have permission to edit this Promotion!"; return;
+	}
+
+	if (currentUser->isAdmin) {
+		while (currentPromotionList->promotion != NULL) {
+			if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
+				currentPromotion = currentPromotionList->promotion;
+				break;
+			}
+			else if (currentPromotionList->next == NULL) {
+				std::cout << "No promotion with the selected id is found!";
+				return;
+			}
+			else {
+				currentPromotionList = currentPromotionList->next;
+			}
+		}
+	}
+	else if (currentUser->isEmployer) {
+		PromotionList* curr = currentUser->USER_PROMOTION;
+		while (curr != NULL) {
+			if (curr->promotion->PROMOTION_ID == selected_id) {
+				currentPromotion = curr->promotion;
+				break;
+			}
+			else if (curr->next == NULL) {
+				std::cout << "No promotion with the selected id is found!";
+				return;
+			}
+			else {
+				curr = curr->next;
+			}
+		}
+	}
+
+	std::cout << "Selected Promotion to delete:" << std::endl;
+	viewCurrentPromotionInfo(currentPromotion);
+
+	deleteCurrentPromotion(currentUser, currentPromotion);
+
+	savePromotionListToDatabase();
 }
 
 void Promotion::searchPromotion(UserData* currentUser) {
@@ -878,3 +928,47 @@ void Promotion::editCurrentPromotion(UserData* currentUser, PromotionData* selec
 	savePromotionListToDatabase();
 	loadPromotionListFromDatabase();
 }
+
+void Promotion::deleteCurrentPromotion(UserData* currentUser, PromotionData* selectedPromotion) {
+
+	delete selectedPromotion;
+	selectedPromotion = NULL;
+
+	std::cout << "Selected Promotion has been deleted" << std::endl;
+
+	savePromotionListToDatabase();
+	loadPromotionListFromDatabase();
+
+	return;
+
+
+
+}
+
+//void Promotion::viewPromotionGuest()
+//{
+//	if (headerPromotionList->promotion == NULL) {
+//		std::cout << "No Promotion in database." << std::endl;
+//		system("pause");
+//		return;
+//	}
+//	else {
+//		std::cout << "===================== Promotion list =====================" << std::endl;
+//		std::cout << "Promotion ID\t| " << "Promotion Name\t|" << "Promotion Description" << std::endl << std::endl;
+//		while (currentPromotionList->promotion != NULL) {
+//			if (currentPromotion == NULL) {
+//				currentPromotionList = currentPromotionList->next;
+//			}
+//			currentPromotion = currentPromotionList->promotion;
+//			viewPromotionBrief(currentPromotion);
+//
+//			if (currentPromotionList->next == NULL) {
+//				break;
+//			}
+//			else {
+//				currentPromotionList = currentPromotionList->next;
+//			}
+//		}
+//		std::cout<<"==========================================================";
+//	}
+//}

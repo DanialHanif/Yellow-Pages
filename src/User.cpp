@@ -15,62 +15,9 @@
 
     }
 
-	/*int User::getID() { return this->userData->USER_ID; }
-    std::string User::getUsername(){ return this->userData->USER_NAME; }
-    std::string User::getFullName(){ return this->userData->USER_FULL_NAME; }
-    std::string User::getEmailAddress(){ return this->userData->USER_EMAIL; }
-    std::string User::getDateOfBirth(){ return this->userData->USER_DOB; }
-    std::string User::getStreetAddress(){ return this->userData->USER_ADDRESS; }
-    std::string User::getPassword(){ return this->userData->USER_PASSWORD; }
-    std::string User::getRegistrationDate(){ return this->userData->USER_REG_DATE; }*/
-
     UserData* User::getUserData(){ return this->currentUser; }
     UserList* User::getUsersList(){ return this->headerUserList; }
 
-
-	/*std::string User::hexEncodeInfo(std::string const& info) {
-
-		std::ostringstream stringstream;
-		for (size_t i = 0; i < info.size(); ++i) {
-			int j = info[i]; //converts characters into integers
-			stringstream << std::setfill('0') << std::hex << std::setw(2) << std::uppercase; //set the stringstream to fill 0s and converts integers to hexadecimals
-			stringstream << j;
-		}
-		return stringstream.str();
-
-	}*/
-
-	/*std::string User::decodeInfo(std::string const& encodedInfo) {
-
-		static const char* const hexcharacters = "0123456789ABCDEF";
-		std::string decodedInfo;
-		size_t len = encodedInfo.length();
-		if (len & 1) {
-
-			return decodedInfo;
-		}
-
-		decodedInfo.reserve(len / 2);
-		for (size_t i = 0; i < len; i += 2) {
-
-			char a = encodedInfo[i];
-			char b = encodedInfo[i + 1];
-
-			const char* p = std::lower_bound(hexcharacters, hexcharacters + 16, a);
-			const char* q = std::lower_bound(hexcharacters, hexcharacters + 16, b);
-
-			if (*q != b || *p != a) {
-				return decodedInfo;
-
-			}
-
-			decodedInfo.push_back(static_cast<char>(((p - hexcharacters) << 4) | (q - hexcharacters)));
-
-		}
-
-		return decodedInfo;
-
-	}*/
 
 	void User::saveUserInfoToDatabase() {
 
@@ -116,7 +63,7 @@
 		std::cin >> password;
 
 		if (headerUserList->user == NULL) {
-			std::cout << "No users in database. Please create one.";
+			std::cout << "No users in database. Please create one.\n";
 			return false;
 		}
 		else {
@@ -155,23 +102,10 @@
 		std::ifstream userDatabase("userDB.dat");
 		std::string::size_type position = 0;
 		
-		/*if (userDatabase.fail()) {
-			std::cout << "User Database is not found!" << std::endl;
-			std::cout << "Creating new user database..." << std::endl;
-			std::ofstream outputFile;
-			outputFile.open("userDB.dat", std::ios_base::app);
-			outputFile.close();
-		}*/
 
 		while (std::getline(userDatabase, info)) {
 
-			//info = decodeInfo(info);
-			//position = info.rfind(user_pass, info.length());
-			/*if (position == std::string::npos) {
-				std::cout << "Invalid account details entered!" << std::endl;
-				return false;
-			}*/
-			//if (info.rfind(user_pass) != std::string::npos) {
+			
 			if (info.size() > 0) {
 				//trim first line that contains user information
 				std::string::size_type endOfUserRawData = 0;
@@ -257,22 +191,60 @@
 		}
 	}
 
-	void User::addUserToList(UserData* user) {//TODO
+	void User::addUser(UserData* currentUser) {//TODO
 
 		UserList* newUser = new UserList;
 		newUser->user = new UserData;
 		newUser->next = NULL;
-		newUser->user->USER_COMPANIES = NULL;
-		newUser->user->USER_PROMOTION = NULL;
-		newUser->user->USER_SERVICES = NULL;
-		newUser->user->USER_JOBS = NULL;
-		newUser->user->isAdmin = false;
+		newUser->user->USER_REG_DATE = registrationDate();
+		std::cin.ignore();
+
 		newUser->user->USER_ID = generateID();
+		if (currentUser->isAdmin) {
+			std::cout << "Enter Reference Number: "; getline(std::cin, newUser->user->USER_REFERENCENUMBER);
+			std::cin.ignore();
+		}
 		
+		else {
+			std::cout << "You don't have permission to add a new User!"; 
+			system("pause");
+			return;
+		}
+
+		std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
+		checkValidInput(newUser->user->USER_NAME);
+		checkIfUserExist(newUser->user->USER_NAME);
+		std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
+		std::cout << "Email Address: "; std::getline(std::cin, newUser->user->USER_EMAIL);
+		std::cout << "Date of Birth (Day/Month/Year eg. 23/08/1998): "; std::getline(std::cin, newUser->user->USER_DOB);
+		std::cout << "Street Address: "; std::getline(std::cin, newUser->user->USER_ADDRESS);
+		std::cout << "Password(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_PASSWORD);
+		checkValidInput(newUser->user->USER_PASSWORD);
+		newUser->user->USER_REG_DATE = registrationDate();
+
+
+		if (currentUserList->user == NULL && currentUserList->next == NULL) {
+
+			delete usersList;
+			usersList = newUser;
+			headerUserList = usersList;
+			currentUserList = headerUserList;
+		}
+		else if (currentUserList->user != NULL && currentUserList->next == NULL) {
+
+			currentUserList->next = newUser;
+		}
+
+		saveUserInfoToDatabase();
+		loadUserInfoFromDatabaseToList();
+		system("pause");
+		system("cls");
+
+		return;
 	}
 
 
-    void User::viewCurrentUserInfo(){
+    void User::viewCurrentUserInfo(UserData* ){
 
 		std::cout << std::endl<<std::endl; 
 		std::cout << "============ Profile Info ============" << std::endl;
@@ -408,14 +380,37 @@
 		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" Please enter your choice."<< std::endl;
 		std::cout << "1.	Update Profile" << std::endl;
 		std::cout << "2.	View Company Profile" << std::endl;
-		std::cout << "3.	View Jobs" << std::endl;
-		std::cout << "4.	View services" << std::endl;
-		std::cout << "5.	View promotion" << std::endl;
+		std::cout << "3.	View Jobs Posted" << std::endl;
+		std::cout << "4.	View Services Posted" << std::endl;
+		std::cout << "5.	View Promotion Posted" << std::endl;
 		std::cout << "6.	Logout" << std::endl;
 	}
 	  
+	void User::guest() {
 
-	/*void User::searchUser(UserData* currentUser) {
+		UserData* guestData = new UserData;
+		guestData->isAdmin = 0;
+		guestData->isEmployer = 0;
+		guestData->isLoggedIn = 0;
+		guestData->USER_ADDRESS = "";
+		guestData->USER_DOB = "";
+		guestData->USER_EMAIL = "";
+		guestData->USER_FULL_NAME = "Guest";
+		guestData->USER_ID = 0;
+		guestData->USER_NAME = "Guest";
+		guestData->USER_PASSWORD = "";
+		guestData->USER_REFERENCENUMBER = "";
+		guestData->USER_REG_DATE = "";
+		guestData->USER_COMPANIES = NULL;
+		guestData->USER_PROMOTION = NULL;
+		guestData->USER_SERVICES = NULL;
+
+		currentUser = guestData;
+
+
+	}
+
+	void User::searchUser(UserData* currentUser) {
 
 		int selected_id;
 		UserList* headerforCurrentList;
@@ -429,8 +424,8 @@
 
 			std::cout << "1. Search by User ID" << std::endl;
 			std::cout << "2. Search by Name" << std::endl;
-			std::cout << "3. Search by Keyword" << std::endl;
-			std::cout << "4. View All Companies" << std::endl;
+			std::cout << "3. Search by Reference Number" << std::endl;
+			std::cout << "4. View All Users" << std::endl;
 			std::cout << "0. Exit Search" << std::endl;
 			std::cout << "\n\tChoice : ";
 			std::cin >> selected_id;
@@ -443,42 +438,42 @@
 			}
 			case 1: {
 				std::cin.ignore();
-				std::cout << "Enter Company ID: "; std::cin >> selected_id;
+				std::cout << "Enter User ID: "; std::cin >> selected_id;
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
 
-				if (headerCompanyList->company == NULL) {
-					std::cout << "No Company in database. Please create one." << std::endl;
+				if (headerUserList->user == NULL) {
+					std::cout << "No Users in database. Please create one." << std::endl;
 					system("pause");
 					return;
 				}
 				else {
-					while (currentCompanyList->company != NULL) {
-						if (std::to_string(currentCompanyList->company->COMPANY_ID).find(std::to_string(selected_id)) != std::string::npos) {
+					while (currentUserList->user != NULL) {
+						if (std::to_string(currentUserList->user->USER_ID).find(std::to_string(selected_id)) != std::string::npos) {
 							if (searchedUser == NULL) {
-								headerforCurrentList = currentCompanyList;
+								headerforCurrentList = currentUserList;
 							}
-							searchedUser = currentCompanyList->company;
-							viewCompanyBrief(searchedUser);
-							if (currentCompanyList->next == NULL) {
+							searchedUser = currentUserList->user;
+							viewUserBrief(searchedUser);
+							if (currentUserList->next == NULL) {
 								break;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
-						else if (currentCompanyList->next == NULL && searchedUser == NULL) {
-							std::cout << "No company with the id is found!" << std::endl;
+						else if (currentUserList->next == NULL && searchedUser == NULL) {
+							std::cout << "No user with the id is found!" << std::endl;
 							system("pause");
 							break;
 						}
-						else if (currentCompanyList->next == NULL) {
+						else if (currentUserList->next == NULL) {
 							break;
 						}
 						else {
-							currentCompanyList = currentCompanyList->next;
+							currentUserList = currentUserList->next;
 						}
 					}
 				}
@@ -488,8 +483,8 @@
 					std::cout << "\n=========================================================" << std::endl;
 
 
-					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
-					currentCompanyList = headerforCurrentList;
+					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
+					currentUserList = headerforCurrentList;
 					std::cin >> selected_id;
 
 					switch (selected_id) {
@@ -498,30 +493,30 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
 
 						while (true) {
-							if (currentCompanyList->company->COMPANY_ID == selected_id) {
-								searchedUser = currentCompanyList->company;
+							if (currentUserList->user->USER_ID == selected_id) {
+								searchedUser = currentUserList->user;
 								break;
 							}
-							else if (currentCompanyList->next == NULL) {
-								std::cout << "No company with the selected id is found!" << std::endl;
+							else if (currentUserList->next == NULL) {
+								std::cout << "No user with the selected id is found!" << std::endl;
 								return;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
 
-						viewCurrentCompanyInfo(searchedUser);
+						viewCurrentUserInfo(searchedUser);
 						std::cout << "[0]Back ";
-						if (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID) {
+						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
 						std::cin >> selected_id;
-						if (selected_id == 1 && (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID)) {
-							editCurrentCompany(currentUser, searchedUser);
+						if (selected_id == 1 && currentUser->isAdmin) {
+							editCurrentUser(currentUser, searchedUser);
 						}
 
 						else {
@@ -543,42 +538,42 @@
 			}
 			case 2: {
 				std::cin.ignore();
-				std::cout << "Enter Company Name: "; std::cin >> keyword;
+				std::cout << "Enter Username: "; std::cin >> keyword;
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
 
-				if (headerCompanyList->company == NULL) {
-					std::cout << "No Company in database. Please create one." << std::endl;
+				if (headerUserList->user == NULL) {
+					std::cout << "No Users in database. Please create one." << std::endl;
 					system("pause");
 					return;
 				}
 				else {
-					while (currentCompanyList->company != NULL) {
-						if (currentCompanyList->company->COMPANY_NAME.find(keyword) != std::string::npos) {
+					while (currentUserList->user != NULL) {
+						if (currentUserList->user->USER_NAME.find(keyword) != std::string::npos) {
 							if (searchedUser == NULL) {
-								headerforCurrentList = currentCompanyList;
+								headerforCurrentList = currentUserList;
 							}
-							searchedUser = currentCompanyList->company;
-							viewCompanyBrief(searchedUser);
-							if (currentCompanyList->next == NULL) {
+							searchedUser = currentUserList->user;
+							viewUserBrief(searchedUser);
+							if (currentUserList->next == NULL) {
 								break;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
-						else if (currentCompanyList->next == NULL && searchedUser == NULL) {
-							std::cout << "No company with the name is found!" << std::endl;
+						else if (currentUserList->next == NULL && searchedUser == NULL) {
+							std::cout << "No user with the name is found!" << std::endl;
 							system("pause");
 							break;
 						}
-						else if (currentCompanyList->next == NULL) {
+						else if (currentUserList->next == NULL) {
 							break;
 						}
 						else {
-							currentCompanyList = currentCompanyList->next;
+							currentUserList = currentUserList->next;
 						}
 					}
 				}
@@ -587,8 +582,8 @@
 					std::cout << "\n=========================================================" << std::endl;
 
 
-					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
-					currentCompanyList = headerforCurrentList;
+					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
+					currentUserList = headerforCurrentList;
 					std::cin >> selected_id;
 
 					switch (selected_id) {
@@ -597,30 +592,30 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
 
 						while (true) {
-							if (currentCompanyList->company->COMPANY_ID == selected_id) {
-								searchedUser = currentCompanyList->company;
+							if (currentUserList->user->USER_ID == selected_id) {
+								searchedUser = currentUserList->user;
 								break;
 							}
-							else if (currentCompanyList->next == NULL) {
-								std::cout << "No company with the selected id is found!" << std::endl;
+							else if (currentUserList->next == NULL) {
+								std::cout << "No user with the selected id is found!" << std::endl;
 								return;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
 
-						viewCurrentCompanyInfo(searchedUser);
+						viewCurrentUserInfo(searchedUser);
 						std::cout << "[0]Back ";
-						if (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID) {
+						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
 						std::cin >> selected_id;
-						if (selected_id == 1 && (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID)) {
-							editCurrentCompany(currentUser, searchedUser);
+						if (selected_id == 1 && currentUser->isAdmin) {
+							editCurrentUser(currentUser, searchedUser);
 						}
 
 						else {
@@ -642,42 +637,42 @@
 			}
 			case 3: {
 				std::cin.ignore();
-				std::cout << "Enter Keyword: "; std::cin >> keyword;
+				std::cout << "Enter Reference Number: "; std::cin >> keyword;
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
-				std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
+				std::cout << "User ID\t| " << "User Name\t|" << "Reference Number" << std::endl << std::endl;
 
-				if (headerCompanyList->company == NULL) {
-					std::cout << "No Company in database. Please create one." << std::endl;
+				if (headerUserList->user == NULL) {
+					std::cout << "No users in database. Please create one." << std::endl;
 					system("pause");
 					return;
 				}
 				else {
-					while (currentCompanyList->company != NULL) {
-						if (currentCompanyList->company->COMPANY_DESCRIPTION.find(keyword) != std::string::npos) {
+					while (currentUserList->user != NULL) {
+						if (currentUserList->user->USER_REFERENCENUMBER.find(keyword) != std::string::npos) {
 							if (searchedUser == NULL) {
-								headerforCurrentList = currentCompanyList;
+								headerforCurrentList = currentUserList;
 							}
-							searchedUser = currentCompanyList->company;
-							viewCompanyBrief(searchedUser);
-							if (currentCompanyList->next == NULL) {
+							searchedUser = currentUserList->user;
+							viewUserBrief(searchedUser);
+							if (currentUserList->next == NULL) {
 								break;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
-						else if (currentCompanyList->next == NULL && searchedUser == NULL) {
-							std::cout << "No company with the keyword is found!" << std::endl;
+						else if (currentUserList->next == NULL && searchedUser == NULL) {
+							std::cout << "No users with the reference is found!" << std::endl;
 							system("pause");
 							break;
 						}
-						else if (currentCompanyList->next == NULL) {
+						else if (currentUserList->next == NULL) {
 							break;
 						}
 						else {
-							currentCompanyList = currentCompanyList->next;
+							currentUserList = currentUserList->next;
 						}
 					}
 				}
@@ -687,8 +682,8 @@
 					std::cout << "\n=========================================================" << std::endl;
 
 
-					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
-					currentCompanyList = headerforCurrentList;
+					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
+					currentUserList = headerforCurrentList;
 					std::cin >> selected_id;
 
 					switch (selected_id) {
@@ -697,30 +692,30 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
 
 						while (true) {
-							if (currentCompanyList->company->COMPANY_ID == selected_id) {
-								searchedUser = currentCompanyList->company;
+							if (currentUserList->user->USER_ID == selected_id) {
+								searchedUser = currentUserList->user;
 								break;
 							}
-							else if (currentCompanyList->next == NULL) {
-								std::cout << "No company with the selected id is found!" << std::endl;
+							else if (currentUserList->next == NULL) {
+								std::cout << "No user with the selected id is found!" << std::endl;
 								return;
 							}
 							else {
-								currentCompanyList = currentCompanyList->next;
+								currentUserList = currentUserList->next;
 							}
 						}
 
-						viewCurrentCompanyInfo(searchedUser);
+						viewCurrentUserInfo(searchedUser);
 						std::cout << "[0]Back ";
-						if (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID) {
+						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
 						std::cin >> selected_id;
-						if (selected_id == 1 && (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID)) {
-							editCurrentCompany(currentUser, searchedUser);
+						if (selected_id == 1 && currentUser->isAdmin) {
+							editCurrentUser(currentUser, searchedUser);
 						}
 
 						else {
@@ -742,27 +737,27 @@
 			}
 			case 4: {
 
-				if (headerCompanyList->company == NULL) {
-					std::cout << "No Company in database. Please create one." << std::endl;
+				if (headerUserList->user == NULL) {
+					std::cout << "No Users in database. Please create one." << std::endl;
 					system("pause");
 					return;
 				}
 				else {
 					system("cls");
 					std::cout << "===================== Results =====================" << std::endl;
-					std::cout << "Company ID\t| " << "Company Name\t|" << "Company Description" << std::endl << std::endl;
-					while (currentCompanyList->company != NULL) {
+					std::cout << "User ID\t| " << "User Name\t|" << "User Registration Date" << std::endl << std::endl;
+					while (currentUserList->user != NULL) {
 						if (searchedUser == NULL) {
-							headerforCurrentList = currentCompanyList;
+							headerforCurrentList = currentUserList;
 						}
-						searchedUser = currentCompanyList->company;
-						viewCompanyBrief(searchedUser);
+						searchedUser = currentUserList->user;
+						viewUserBrief(searchedUser);
 
-						if (currentCompanyList->next == NULL) {
+						if (currentUserList->next == NULL) {
 							break;
 						}
 						else {
-							currentCompanyList = currentCompanyList->next;
+							currentUserList = currentUserList->next;
 						}
 					}
 
@@ -771,8 +766,8 @@
 						std::cout << "\n=========================================================" << std::endl;
 
 
-						std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
-						currentCompanyList = headerforCurrentList;
+						std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
+						currentUserList = headerforCurrentList;
 						std::cin >> selected_id;
 
 						switch (selected_id) {
@@ -783,19 +778,19 @@
 						}
 						case 1: {
 							do {
-								std::cout << "Enter Company ID to select:"; std::cin >> selected_id;
+								std::cout << "Enter User ID to select:"; std::cin >> selected_id;
 
-								while (currentCompanyList->company != NULL) {
-									if (currentCompanyList->company->COMPANY_ID == selected_id) {
-										searchedUser = currentCompanyList->company;
+								while (currentUserList->user != NULL) {
+									if (currentUserList->user->USER_ID == selected_id) {
+										searchedUser = currentUserList->user;
 										break;
 									}
-									else if (currentCompanyList->next == NULL) {
-										std::cout << "No company with the selected id is found!" << std::endl;
+									else if (currentUserList->next == NULL) {
+										std::cout << "No user with the selected id is found!" << std::endl;
 										break;
 									}
 									else {
-										currentCompanyList = currentCompanyList->next;
+										currentUserList = currentUserList->next;
 									}
 								}
 								if (searchedUser != NULL) {
@@ -803,14 +798,14 @@
 								}
 							} while (selected_id);
 							if (searchedUser != NULL) {
-								viewCurrentCompanyInfo(searchedUser);
+								viewCurrentUserInfo(searchedUser);
 								std::cout << "[0]Back ";
-								if (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID) {
+								if (currentUser->isAdmin) {
 									std::cout << "[1]Edit " << std::endl;
 								}
 								std::cin >> selected_id;
-								if (selected_id == 1 && (currentUser->isAdmin || searchedUser->COMPANY_OWNERID == currentUser->USER_ID)) {
-									editCurrentCompany(currentUser, searchedUser);
+								if (selected_id == 1 && currentUser->isAdmin) {
+									editCurrentUser(currentUser, searchedUser);
 								}
 
 								else {
@@ -825,7 +820,7 @@
 					}
 					else {
 
-						std::cout << "No Companies in database!\n" << std::endl;
+						std::cout << "No Users in database!\n" << std::endl;
 
 
 						std::cout << "\n=========================================================" << std::endl;
@@ -844,4 +839,150 @@
 		} while (selected_id);
 
 
-	}*/
+	}
+
+	void User::viewUserBrief(UserData* currentUser) {
+
+		std::cout << currentUser->USER_ID << "\t" << currentUser->USER_NAME << "\t" << currentUser->USER_REFERENCENUMBER << std::endl;
+	}
+
+	void User::editCurrentUser(UserData* currentUser, UserData* selectedUser) {
+
+		int selected_id;
+
+		do {
+			system("cls");
+			std::cout << "Selected User to edit:" << std::endl;
+			viewCurrentUserInfo(selectedUser);
+
+			std::cout << "1. Update Username" << std::endl;
+			std::cout << "2. Update Full Name" << std::endl;
+			std::cout << "3. Update Email" << std::endl;
+			std::cout << "4. Update Date of Birth" << std::endl;
+			std::cout << "5. Update Address" << std::endl;
+			std::cout << "6. Update Password" << std::endl;
+			if (currentUser->isAdmin) {
+				std::cout << "7. Update Reference Number" << std::endl;
+				std::cout << "8. Delete User" << std::endl;
+			}
+			std::cout << "0. Finish edit" << std::endl;
+
+			std::cin >> selected_id;
+
+			switch (selected_id) {
+			case 0: {
+				system("cls");
+				break;
+			}
+			case 1: {
+				std::cin.ignore();
+				std::cout << "Enter new Username: "; std::getline(std::cin, selectedUser->USER_NAME);
+				break;
+			}
+			case 2: {
+				std::cin.ignore();
+				std::cout << "Enter new Full Name: "; std::getline(std::cin, selectedUser->USER_FULL_NAME);
+				break;
+			}
+			case 3: {
+				std::cin.ignore();
+				std::cout << "Enter new Email: "; std::getline(std::cin, selectedUser->USER_EMAIL);
+				break;
+			}
+			case 4: {
+				std::cin.ignore();
+				std::cout << "Enter new Date of Birth: "; std::getline(std::cin, selectedUser->USER_DOB);
+				break;
+			}
+			case 5: {
+				std::cin.ignore();
+				std::cout << "Enter new Address: "; std::getline(std::cin, selectedUser->USER_ADDRESS);
+				break;
+			}
+			case 6: {
+				std::cin.ignore();
+				std::cout << "Enter new Password: "; std::getline(std::cin, selectedUser->USER_PASSWORD);
+				break;
+			}
+			case 7: {
+				std::cin.ignore();
+				std::cout << "Enter new Reference Number: "; std::cin >> selectedUser->USER_REFERENCENUMBER;
+				break;
+			}
+			case 8: {
+				std::cin.ignore();
+				std::cout << "Are you sure you want to delete the selected user?\n";
+				std::cout << "Please re-input User ID to confirm: \n"; std::cin >> selected_id;
+				if (selected_id == selectedUser->USER_ID) {
+					deleteCurrentUser(currentUser, selectedUser);
+				}
+
+
+				break;
+			}
+			default: {
+				std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
+				break;
+			}
+			}
+
+		} while (selected_id);
+		saveUserInfoToDatabase();
+		loadUserInfoFromDatabaseToList();
+	}
+
+	void User::deleteCurrentUser(UserData* currentUser, UserData* selectedUser) {
+
+		delete selectedUser;
+		selectedUser = NULL;
+
+		std::cout << "Selected User has been deleted" << std::endl;
+
+		saveUserInfoToDatabase();
+		loadUserInfoFromDatabaseToList();
+
+		return;
+
+
+
+	}
+
+	void User::editUser(UserData* currentUser) {
+
+		currentUserList = headerUserList;
+		int selected_id;
+		UserData* selectedUser;
+		selectedUser = NULL;
+		std::cin.ignore();
+		if (currentUser->isAdmin) {
+
+			std::cout << "Select User ID:" << std::endl; std::cin >> selected_id;
+		}
+		else {
+			std::cout << "You don't have permission to edit this User!"; return;
+		}
+
+		if (currentUser->isAdmin) {
+			while (currentUserList->user != NULL) {
+				if (currentUserList->user->USER_ID == selected_id) {
+					selectedUser = currentUserList->user;
+					break;
+				}
+				else if (currentUserList->next == NULL) {
+					std::cout << "No user with the selected id is found!";
+					return;
+				}
+				else {
+					currentUserList = currentUserList->next;
+				}
+			}
+		}
+
+		std::cout << "Selected User to edit:" << std::endl;
+		viewCurrentUserInfo(selectedUser);
+
+		editCurrentUser(currentUser, selectedUser);
+
+		saveUserInfoToDatabase();
+	}
+

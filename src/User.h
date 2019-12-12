@@ -47,26 +47,29 @@ class User {
 
         void setup();
 		time_t generateID();
-        /*void setUsername(std::string);
-        void setFullName(std::string);
-        void setEmailAddress(std::string);
-        void setDateOfBirth(std::wstring&);
-        void setStreetAddress(std::string);
-        void setPassword(std::string);*/
         std::string registrationDate();
         void addUserFromDBToList(std::queue<std::string>);
-        void addUserToList(UserData*);
-        /*void addPostings(std::string, std::string, int);
-        void deleteSkills(int&);
-		void updateSkills(int&, std::string, std::string, int);*/
+        
+
 		void saveUserInfoToDatabase();
 		void loadUserInfoFromDatabaseToList();
 		void checkValidInput(std::string&);
 		void checkIfUserExist(std::string&);
-        void viewUsers();
-        void viewCurrentUserInfo();
+
+        void addUser(UserData*);
+        void editUser(UserData*);
+        void searchUser(UserData*);
+
+
+
+
+        void viewCurrentUserInfo(UserData*);
+        void viewUserBrief(UserData*);
+        void editCurrentUser(UserData*, UserData*);
+        void deleteCurrentUser(UserData*, UserData*);
+        
         void userMenu();
-		//void searchUser(UserData* currentUser);
+        void guest();
         
 
 };

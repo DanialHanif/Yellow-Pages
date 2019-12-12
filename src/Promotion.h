@@ -38,7 +38,8 @@ public:
 	void viewCurrentPromotionInfo(PromotionData*);
 	void viewPromotionBrief(PromotionData*);
 	void editCurrentPromotion(UserData*, PromotionData*);
-
+	void deleteCurrentPromotion(UserData*, PromotionData*);
+	//void viewPromotionGuest();
 };
 
 #endif // !PROMOTION_H

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "User.h"
 #include "Company.h"
+#include "Promotion.h"
 
 
 /*void loggedInMenu(User& a, bool& loggedin) {
@@ -219,29 +220,6 @@ int main() {
 
 }*/
 
-/*int main()
-{
-	Payment a;
-
-	a.Description();
-
-	cout << "\n****************************************** List of deals ******************************************\n" << endl;
-	cout << "\t\t1. Essential = RM 49.90 / monthly \n\t\t2. Commerce = RM 79.90 / monthly \n\t\t3. Deluxe = RM 149.90 / monthly \n\n";
-	cout << "***************************************************************************************************\n\n";
-	cout << "___________________________________________________________________________________________________\n\n";
-	cout << "\t\tInsert a number of deals you wants to know more , (1/2/3)\n\t\tInsert any other number to continue or cancel the payment : ";
-
-	int deals;
-	cin >> deals;
-	cout << "___________________________________________________________________________________________________\n\n";
-	a.viewDeals(deals);
-	cout << "\n\n___________________________________________________________________________________________________\n";
-	cout << "___________________________________________________________________________________________________\n\n";
-	cout << "\t\tThank you for dealing with us!!  ^_^\n\n\n";
-
-	return 0;
-}*/
-
 void MainMenu();
 
 int main() {
@@ -284,7 +262,7 @@ void MainMenu() {
 				system("cls");
 				User a;
 				a.setup();
-				std::cout<< "You have successfully register\n\n";
+				std::cout<< "You have successfully registered!\n\n";
 				a.viewCurrentUserInfo();
 				break; 
 			}
@@ -318,6 +296,7 @@ void MainMenu() {
 							std::cout << "\nYou choose view Company \n\n";
 							Company companyObject;
 							//companyObject.addCompany(a.getUserData());
+							//companyObject.viewCompany(a.getUserData());
 							companyObject.searchCompany(a.getUserData());
 							break;
 						}
@@ -331,6 +310,13 @@ void MainMenu() {
 						}
 						case 5://view promotion
 						{
+							Promotion promotionObject;
+							//companyObject.addCompany(a.getUserData());
+							//companyObject.viewCompany(a.getUserData());
+
+							//promotionObject.addPromotion(a.getUserData());
+							//promotionObject.searchPromotion(a.getUserData());
+							promotionObject.viewPromotion(a.getUserData());
 							break;
 						}
 						case 6://logout

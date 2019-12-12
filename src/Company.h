@@ -23,21 +23,22 @@ class Company {
 		Company();
 		CompanyData* getCompanyData();
 		CompanyList* getCompanyList();
-		void addCompany(UserData*);
+		void addCompany(UserData*);//add company to database
 		void editCompany(UserData*);
 		void deleteCompany(UserData*);
 		void searchCompany(UserData*);
 		void viewCompany(UserData*);
 		void saveCompanyListToDatabase();
 		void loadCompanyListFromDatabase();
-		void addCompanyDataFromDBToList(std::queue<std::string>);
+		void addCompanyDataFromDBToList(std::queue<std::string>);//convert raw company database to list
 		void checkValidInput(std::string&);
 		void checkValidInputNumber(std::string&);
 		time_t generateID();
 		std::string registrationDate();
 		void viewCurrentCompanyInfo(CompanyData*);
 		void viewCompanyBrief(CompanyData*);
-		void editCurrentCompany(UserData*, CompanyData*);
+		void editCurrentCompany(UserData*, CompanyData*);//edit current selected company
+		void deleteCurrentCompany(UserData*, CompanyData*);//delete current selected company
 
 };
 

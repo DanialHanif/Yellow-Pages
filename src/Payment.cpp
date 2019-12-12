@@ -161,11 +161,11 @@ void Payment::OnlineBanking()
 		ShellExecute(NULL, "open", bsn, NULL, NULL, SW_SHOWNORMAL);
 	}
 	
-	cout<<"\n\n\t Insert your reference number : ";
+	/*cout<<"\n\n\t Insert your reference number : ";
 	int ref;
 	cin>>ref;
 	paid = true;
-	result();
+	result();*/
 	cout<<endl<<endl;
 }
 

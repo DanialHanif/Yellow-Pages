@@ -19,7 +19,6 @@ struct CompanyData {
 	std::string COMPANY_CONTACTNUMBER;
 	std::string COMPANY_WEBSITE;
 	std::string COMPANY_REGISTRATION_DATE;
-	//std::string COMPANY_CATEGORY;
 
 };
  
@@ -33,7 +32,6 @@ struct JobData {
 	std::string JOB_WEBSITE;
 	std::string JOB_COMPANY;
 	std::string POSTING_DATE;
-	//std::string JOB_CATEGORY;
 	CompanyData* companyLink;
 
 };
@@ -47,28 +45,20 @@ struct ServiceData {
 	std::string SERVICE_COMPANY;
 	std::string SERVICE_WEBSITE;
 	std::string POSTING_DATE;
-	//std::string SERVICE_CATEGORY;
 	CompanyData* companyLink;
 	ServiceData* next;
 
 };
 
-struct DealData {
-
-	int DEAL_ID;
-	std::string DEAL_NAME;
-	std::string DEAL_DESCRIPTION;
-	//std::string DEAL_CATEGORY;
-	double DEAL_PRICE;
-
-};
 
 struct PromotionData {
 
-	std::string DEAL_NAME;
-	std::string DEAL_DESCRIPTION;
-	double DEAL_PRICE;
-	std::string POSTING_DATE;
+	int PROMOTION_ID;
+	int PROMOTION_OWNERID;
+	std::string PROMOTION_NAME;
+	std::string PROMOTION_DESCRIPTION;
+	double PROMOTION_PRICE;
+	std::string PROMOTION_POSTING_DATE;
 
 };
 
@@ -88,23 +78,14 @@ struct JobList {
 struct ServiceList {
 
 	ServiceData* service;
-	//Category* category;
 	ServiceList* next;
 
 };
 
-struct DealList {
-
-	DealData* deal;
-	//Category* category;
-	DealList* next;
-
-};
 
 struct PromotionList {
 
 	PromotionData* promotion;
-	//Category* category;
 	PromotionList* next;
 
 };
@@ -115,7 +96,6 @@ struct UserData {
 	int USER_ID;
 	bool isAdmin;
 	bool isEmployer;
-	bool isGuest;
 	bool isLoggedIn;
 	std::string USER_NAME;
 	std::string USER_FULL_NAME;
@@ -124,9 +104,10 @@ struct UserData {
 	std::string USER_ADDRESS;
 	std::string USER_PASSWORD;
 	std::string	USER_REG_DATE;
+	std::string	USER_REFERENCENUMBER;
 	CompanyList* USER_COMPANIES;
 	ServiceList* USER_SERVICES;
-	DealList* USER_DEALS;
+	JobList* USER_JOBS;
 	PromotionList* USER_PROMOTION;
 
 };
@@ -137,22 +118,3 @@ struct UserList {
 	UserList* next;
 
 };
-
-
-/*struct Category {
-
-	std::string CATEGORY_NAME;
-	DealList* deal;
-	JobList* job;
-	ServiceList* service;
-
-
-};*/
-
-struct Invoice {
-
-	std::string INVOICE_NUMBER;
-	DealData* INVOICE_DEALS;
-
-};
-

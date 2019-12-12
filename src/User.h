@@ -66,6 +66,7 @@ class User {
         void viewUsers();
         void viewCurrentUserInfo();
         void userMenu();
+		//void searchUser(UserData* currentUser);
         
 
 };

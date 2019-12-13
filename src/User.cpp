@@ -372,12 +372,11 @@
 		std::cout << "\n********************************************************\n\n";
 		std::cout << "________________________________________________________\n\n";
 		Payment payMenu;
-		system("pause");
-		system("cls");
 		std:: cout<< "\n\n\tEnter reference number : ";
 		std::cin.ignore();
 		std::cin >> newUser->user->USER_REFERENCENUMBER;
 		std::cin.ignore();
+		system("pause");
 		system("cls");
 		std::cout << "\n\n======================================================\nPlease fill in your detail.";
 		std::cout << "\n\nUsername(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);

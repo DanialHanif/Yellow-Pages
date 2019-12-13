@@ -101,6 +101,10 @@ void MainMenu() {
 							std::cin >> chooseCompany;
 							switch (chooseCompany)
 							{
+							case 0:
+							{
+								break;
+							}
 							case 1:
 							{
 								companyModule.addCompany(userModule.getUserData());
@@ -109,6 +113,8 @@ void MainMenu() {
 							case 2:
 							{
 								companyModule.viewCompany(userModule.getUserData());
+								system("pause");
+								system("cls");
 								break;
 							}
 							case 3:

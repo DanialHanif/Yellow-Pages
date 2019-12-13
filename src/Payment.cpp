@@ -224,7 +224,7 @@ void Payment::payment()
 	if(PaymentMethod==1)
 	{
 		OnlineBanking();
-		system("pause");
+		//system("pause");
 		return;
 	}
 	else if(PaymentMethod==2)
@@ -236,7 +236,7 @@ void Payment::payment()
 		cout<<"\n\n*Snap your resit and sent to our staff\n\n";
 		char phone[100]="https://wa.me/601111425342";
 		ShellExecute(NULL, "open", phone, NULL, NULL, SW_SHOWNORMAL);
-		system("pause");
+		//system("pause");
 		return;
 	}
 	else
@@ -244,7 +244,7 @@ void Payment::payment()
 		cout<<"\nYou may contact our staff\n";
 		char phones[100]="https://wa.me/601111425342";
 		ShellExecute(NULL, "open", phones, NULL, NULL, SW_SHOWNORMAL);
-		system("pause");
+		//system("pause");
 		return;
 	}
 	

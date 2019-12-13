@@ -167,8 +167,6 @@ void Company::viewCompany(UserData* currentUser) {
 	CompanyList* headerforCurrentList;
 	if (headerCompanyList->company == NULL) {
 		std::cout << "No Company in database. Please create one.";
-		system("pause");
-		system("cls");
 		return;
 	}
 	else {
@@ -232,6 +230,7 @@ void Company::viewCompany(UserData* currentUser) {
 				switch (selected_id) {
 
 				case 0: {
+					system("cls");
 					break;
 				}
 				case 1: {
@@ -244,6 +243,8 @@ void Company::viewCompany(UserData* currentUser) {
 						}
 						else if (currentCompanyList->next == NULL) {
 							std::cout << "No company with the selected id is found!" << std::endl;
+							system("pause");
+							system("cls");
 							return;
 						}
 						else {

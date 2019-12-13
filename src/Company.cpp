@@ -167,10 +167,12 @@ void Company::viewCompany(UserData* currentUser) {
 	CompanyList* headerforCurrentList;
 	if (headerCompanyList->company == NULL) {
 		std::cout << "No Company in database. Please create one.";
+		system("pause");
+		system("cls");
 		return;
 	}
 	else {
-		system("cls");
+		//system("cls");
 		std::cout << "===================== Company Lists =====================" << std::endl;
 		std::cout << "Company ID\t| " << "Owner ID\t| " << "Company Name" << std::endl;
 		
@@ -180,7 +182,7 @@ void Company::viewCompany(UserData* currentUser) {
 			if (currentUser->isAdmin) {
 				while (currentCompanyList->company != NULL) {
 		
-					std::cout << currentCompanyList->company->COMPANY_ID << "\t" << currentCompanyList->company->COMPANY_OWNERID << "\t" << currentCompanyList->company->COMPANY_NAME << std::endl;
+					std::cout << currentCompanyList->company->COMPANY_ID << "\t " << currentCompanyList->company->COMPANY_OWNERID << "\t " << currentCompanyList->company->COMPANY_NAME << std::endl;
 					if (currentCompanyList->next != NULL) {
 						currentCompanyList = currentCompanyList->next;
 					}
@@ -193,7 +195,7 @@ void Company::viewCompany(UserData* currentUser) {
 			}
 			//iterate through company list until reach first match
 			else if (currentCompanyList->company->COMPANY_OWNERID == currentUser->USER_ID) {
-				std::cout << currentCompanyList->company->COMPANY_ID << "\t" << currentCompanyList->company->COMPANY_OWNERID << "\t" << currentCompanyList->company->COMPANY_NAME << std::endl;
+				std::cout << currentCompanyList->company->COMPANY_ID << "\t " << currentCompanyList->company->COMPANY_OWNERID << "\t " << currentCompanyList->company->COMPANY_NAME << std::endl;
 				while (currentCompanyList->company != NULL) {
 
 					//add matches to user companies
@@ -350,7 +352,10 @@ void Company::addCompany(UserData* currentUser) {
 		std::cout << "Enter Company Contact Number: "; std::getline(std::cin, newCompany->company->COMPANY_CONTACTNUMBER);
 		checkValidInputNumber(newCompany->company->COMPANY_CONTACTNUMBER);
 		std::cout << "Enter Company Website: "; std::getline(std::cin, newCompany->company->COMPANY_WEBSITE);
-
+		std::cout << "\nYour company have been saved\n";
+		std::cout << "===================================================\n";
+		system("pause");
+		system("cls");
 
 		if (headerCompanyList->company == NULL) {//first load
 			
@@ -388,8 +393,10 @@ void Company::addCompany(UserData* currentUser) {
 		}*/
 
 		saveCompanyListToDatabase();
+
 		viewCompany(currentUser);
-		system("Pause");
+		//system("Pause");
+		//system("cls");
 }
 
 void Company::editCompany(UserData* currentUser){
@@ -512,12 +519,12 @@ void Company::searchCompany(UserData* currentUser) {
 		currentCompanyList = headerCompanyList;
 		currentCompany = NULL;
 
-		std::cout << "[1] Search by Company ID" << std::endl;
+		std::cout << "\n\n[1] Search by Company ID" << std::endl;
 		std::cout << "[2] Search by Name" << std::endl;
 		std::cout << "[3] Search by Keyword" << std::endl;
 		std::cout << "[4] View All Companies" << std::endl;
 		std::cout << "[0] Exit Search" << std::endl;
-		std::cout << "\n\tChoice : ";
+		std::cout << "\nChoice : ";
 		std::cin >> selected_id;
 
 		switch (selected_id) {

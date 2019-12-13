@@ -51,7 +51,7 @@
 		}
 		
 		file.close();
-		std::cout << std::endl << "User data is saved!" << std::endl;
+		std::cout << std::endl << "\nUser data is saved!" << std::endl;
 	}
 
 	void User::clearList() {
@@ -87,6 +87,8 @@
 
 		if (headerUserList->user == NULL) {
 			std::cout << "No users in database. Please create one.\n";
+			system("pause");
+			system("cls");
 			return false;
 		}
 		else {
@@ -102,6 +104,8 @@
 					}
 					else {
 						std::cout << "Invalid password!" << std::endl;
+						system("pause");
+						system("cls");
 						return false;
 					}
 				}
@@ -112,6 +116,8 @@
 					}
 					else {
 						std::cout << "No user found!" << std::endl;
+						system("pause");
+						system("cls");
 						return false;
 					}
 				}
@@ -274,7 +280,7 @@
 
     void User::viewCurrentUserInfo(UserData* selectedUser){
 
-		std::cout << std::endl<<std::endl; 
+		std::cout << std::endl; 
 		std::cout << "============ Profile Info ============" << std::endl;
 		std::cout << "User ID:  " << selectedUser->USER_ID << std::endl;
         std::cout << "Full Name:  " << selectedUser->USER_FULL_NAME << std::endl;
@@ -362,16 +368,19 @@
 		std::cout << "\n******************* One time payment *******************\n" << std::endl;
 		std::cout << "\t1. One time payment = RM 49.90 ";
 		std::cout << std::endl;
-		std::cout << "\tBenefits: Able to post, view and search for companies, services, jobs and promotions!" << std::endl;;
-		std::cout << "***********************************************************\n\n";
-		std::cout << "_______________________________________________________\n\n";
-		system("pause");
+		std::cout << "\tBenefits: Able to post, view and search for \ncompanies, services, jobs and promotions!" << std::endl;;
+		std::cout << "\n********************************************************\n\n";
+		std::cout << "________________________________________________________\n\n";
 		Payment payMenu;
-		std:: cout<< "Enter reference number : ";
+		system("pause");
+		system("cls");
+		std:: cout<< "\n\n\tEnter reference number : ";
 		std::cin.ignore();
 		std::cin >> newUser->user->USER_REFERENCENUMBER;
 		std::cin.ignore();
-		std::cout << "Username(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
+		system("cls");
+		std::cout << "\n\n======================================================\nPlease fill in your detail.";
+		std::cout << "\n\nUsername(Alphanumberic A-z, 0-9): "; std::getline(std::cin, newUser->user->USER_NAME);
 		checkValidInput(newUser->user->USER_NAME);
 		checkIfUserExist(newUser->user->USER_NAME);
 		std::cout << "Full Name:  "; std::getline(std::cin, newUser->user->USER_FULL_NAME);
@@ -404,7 +413,7 @@
 
 	void User::userMenu() 
 	{
-		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" Please enter your choice."<< std::endl;
+		std::cout << "Dear " << currentUser->USER_FULL_NAME <<" please enter your choice.\n"<< std::endl;
 		std::cout << "0. Logout" << std::endl;
 		std::cout << "1. Update Profile" << std::endl;
 		std::cout << "2. Company Management" << std::endl;
@@ -882,7 +891,7 @@
 
 		do {
 			system("cls");
-			std::cout << "Selected User to edit:" << std::endl;
+			//std::cout << "Selected User to edit:" << std::endl;
 			viewCurrentUserInfo(selectedUser);
 
 			std::cout << "1. Update Username" << std::endl;
@@ -895,10 +904,9 @@
 				std::cout << "7. Update Reference Number" << std::endl;
 				std::cout << "8. Delete User" << std::endl;
 			}
-			std::cout << "0. Finish edit" << std::endl;
+			std::cout << "0. Finish edit\n\nChoice (eg. 1) : ";
 
 			std::cin >> selected_id;
-
 			switch (selected_id) {
 			case 0: {
 				system("cls");
@@ -907,44 +915,44 @@
 			case 1: {
 				std::cin.ignore();
 				std::string input;
-				std::cout << "Enter new Username: "; std::getline(std::cin, input);
+				std::cout << "\nEnter new Username: "; std::getline(std::cin, input);
 				checkIfUserExist(input);
 				selectedUser->USER_NAME = input;
 				break;
 			}
 			case 2: {
 				std::cin.ignore();
-				std::cout << "Enter new Full Name: "; std::getline(std::cin, selectedUser->USER_FULL_NAME);
+				std::cout << "\nEnter new Full Name: "; std::getline(std::cin, selectedUser->USER_FULL_NAME);
 				break;
 			}
 			case 3: {
 				std::cin.ignore();
-				std::cout << "Enter new Email: "; std::getline(std::cin, selectedUser->USER_EMAIL);
+				std::cout << "\nEnter new Email: "; std::getline(std::cin, selectedUser->USER_EMAIL);
 				break;
 			}
 			case 4: {
 				std::cin.ignore();
-				std::cout << "Enter new Date of Birth: "; std::getline(std::cin, selectedUser->USER_DOB);
+				std::cout << "\nEnter new Date of Birth: "; std::getline(std::cin, selectedUser->USER_DOB);
 				break;
 			}
 			case 5: {
 				std::cin.ignore();
-				std::cout << "Enter new Address: "; std::getline(std::cin, selectedUser->USER_ADDRESS);
+				std::cout << "\nEnter new Address: "; std::getline(std::cin, selectedUser->USER_ADDRESS);
 				break;
 			}
 			case 6: {
 				std::cin.ignore();
-				std::cout << "Enter new Password: "; std::getline(std::cin, selectedUser->USER_PASSWORD);
+				std::cout << "\nEnter new Password: "; std::getline(std::cin, selectedUser->USER_PASSWORD);
 				break;
 			}
 			case 7: {
 				std::cin.ignore();
-				std::cout << "Enter new Reference Number: "; std::cin >> selectedUser->USER_REFERENCENUMBER;
+				std::cout << "\nEnter new Reference Number: "; std::cin >> selectedUser->USER_REFERENCENUMBER;
 				break;
 			}
 			case 8: {
 				std::cin.ignore();
-				std::cout << "Are you sure you want to delete the selected user?\n";
+				std::cout << "\nAre you sure you want to delete the selected user?\n";
 				std::cout << "Please re-input User ID to confirm: \n"; std::cin >> selected_id;
 				if (selected_id == selectedUser->USER_ID) {
 					deleteCurrentUser(currentUser, selectedUser);
@@ -954,7 +962,7 @@
 				break;
 			}
 			default: {
-				std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
+				std::cout << "\nInvalid input! Try again: "; std::cin >> selected_id;
 				break;
 			}
 			}

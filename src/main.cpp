@@ -50,7 +50,7 @@ void MainMenu() {
 				system("cls");
 				User a;
 				a.setup();
-				std::cout<< "You have successfully registered!\n\n";
+				std::cout<< "You have successfully registered!\n";
 				a.viewCurrentUserInfo(a.getUserData());
 				break; 
 			}
@@ -79,17 +79,17 @@ void MainMenu() {
 					{
 						userModule.viewCurrentUserInfo(userModule.getUserData());
 						userModule.editCurrentUser(userModule.getUserData(), userModule.getUserData());
-						std::cout << "\nYou choose to update your personal data \n";
+						//std::cout << "\nYou choose to update your personal data \n";
 						break;
 					}
 					case 2://view company
 					{
 						std::cout << "\nYou choose view Company \n\n";
-						system("pause");
+						//system("pause");
 						int chooseCompany;
 						do
 						{ 
-							system("cls");
+							//system("cls");
 							std::cout << "===================================================\n";
 							std::cout << "1. Add company\n";
 							std::cout << "2. View my company\n";
@@ -129,13 +129,13 @@ void MainMenu() {
 					case 3://view job
 					{
 						std::cout << "\nYou choose view Job \n\n";
-						system("pause");
+						//system("pause");
 						
 						int chooseJob;
 						do
 						{
-							system("cls");
-							std::cout << "\n===================================================\n";
+							//system("cls");
+							std::cout << "===================================================\n";
 							std::cout << "1. Add job\n";
 							std::cout << "2. View my job\n";
 							std::cout << "3. Search job\n";
@@ -340,7 +340,7 @@ void MainMenu() {
 		case 3:
 		{
 			userModule.guest();
-			system("cls");
+			//system("cls");
 			int guestChoose;
 			do
 			{
@@ -354,7 +354,7 @@ void MainMenu() {
 				std::cout << "\t+================================================================+\n";
 				std::cout << "\n\tChoice (eg. 1) : ";
 				std::cin >> guestChoose;
-				std::cout << "\n\n\t----------------------------------------------------------------\n\n\n";
+				
 				system("cls");
 				switch(guestChoose)
 				{
@@ -391,6 +391,9 @@ void MainMenu() {
 						break;
 					}
 					default:
+						std::cout << "\tPlease enter a valid choice!\n";
+						system("pause");
+						system("cls");
 						break;
 
 				}

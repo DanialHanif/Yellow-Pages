@@ -40,8 +40,8 @@ void Payment::OnlineBanking()
 		cin>>ob;
 	}
 	
-	cout<<"\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-	
+	cout<<"\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+	 
 	if(ob==1)
 	{
 		cout<<"\nYou are choosing Maybank Online Banking";
@@ -212,6 +212,8 @@ void Payment::payment()
 	while(PaymentMethod <1|| PaymentMethod>3)
 	{
 		cout<<"\t\tWrong number!!";
+		system("pause");
+		system("cls");
 		cout<<"\n\tWhich payment method do you prefer?\n\n";
 		cout<<"\t1.Online transfer(internet banking)\n\t2.Cash transfer(ATM)\n\n*you may"
 		<<" insert 3 if you need trusted agent consultation about payment\n\n\tPayment Method (1/2/3): ";

@@ -17,6 +17,7 @@ protected:
 	PromotionList* headerPromotionList;
 	PromotionList* currentPromotionList;
 	PromotionData* currentPromotion;
+	PromotionList* headerforCurrentList;
 
 
 public:
@@ -41,6 +42,7 @@ public:
 	void deleteCurrentPromotion(UserData*, PromotionData*);
 	//void viewPromotionGuest();
 	void clearList();
+	void checkInput(int&);
 };
 
 #endif // !PROMOTION_H

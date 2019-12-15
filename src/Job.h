@@ -17,7 +17,7 @@ protected:
 	JobList* headerJobList;
 	JobList* currentJobList;
 	JobData* currentJob;
-
+	JobList* headerforCurrentList;
 
 public:
 	Job();
@@ -41,6 +41,7 @@ public:
 	void deleteCurrentJob(UserData*, JobData*);
 
 	void clearList();
+	void checkInput(int&);
 
 };
 

@@ -11,6 +11,7 @@
 		this->usersList->next = NULL;
 		this->headerUserList = usersList;
 		this->currentUserList = usersList;
+		this->currentUser = NULL;
 		loadUserInfoFromDatabaseToList();
 
     }
@@ -31,7 +32,7 @@
 
 		while (true) {
 		
-			if (currentUserList->user) {
+			if (currentUserList->user != NULL) {
 				firstpart = "{" + std::to_string(currentUserList->user->USER_ID) + ";" + std::to_string(currentUserList->user->isAdmin) + ";" + std::to_string(currentUserList->user->isEmployer) + ";"
 					+ currentUserList->user->USER_NAME + ";" + currentUserList->user->USER_PASSWORD + ";"
 					+ currentUserList->user->USER_FULL_NAME + ";" + currentUserList->user->USER_EMAIL + ";"
@@ -257,24 +258,38 @@
 		checkValidInput(newUser->user->USER_PASSWORD);
 		newUser->user->USER_REG_DATE = registrationDate();
 
-
-		if (currentUserList->user == NULL && currentUserList->next == NULL) {
-
-			delete usersList;
-			usersList = newUser;
-			headerUserList = usersList;
-			currentUserList = headerUserList;
-		}
-		else if (currentUserList->user != NULL && currentUserList->next == NULL) {
-
-			currentUserList->next = newUser;
-		}
-
-		saveUserInfoToDatabase();
+		viewUserBrief(newUser->user);
+		std::cout << "\nUser added successfully\n";
+		std::cout << "===================================================\n";
 		system("pause");
 		system("cls");
 
-		return;
+
+		if (headerUserList->user == NULL) {//first load
+
+			usersList = newUser;
+			headerUserList = usersList;
+			currentUserList = headerUserList;
+			saveUserInfoToDatabase();
+			viewUserBrief(currentUser);
+		}
+
+		else {
+
+			currentUserList = headerUserList;
+			while (currentUserList) {
+				if (currentUserList->next == NULL) {
+					currentUserList->next = newUser;
+					saveUserInfoToDatabase();
+					viewUserBrief(currentUser);
+					return;
+				}
+
+				else {
+					currentUserList = currentUserList->next;
+				}
+			}
+		}
 	}
 
 
@@ -466,7 +481,7 @@
 			std::cout << "4. View All Users" << std::endl;
 			std::cout << "0. Exit Search" << std::endl;
 			std::cout << "\n\tChoice : ";
-			std::cin >> selected_id;
+			std::cin >> selected_id; checkInput(selected_id);
 
 			switch (selected_id) {
 			case 0: {
@@ -476,7 +491,7 @@
 			}
 			case 1: {
 				std::cin.ignore();
-				std::cout << "Enter User ID: "; std::cin >> selected_id;
+				std::cout << "Enter User ID: "; std::cin >> selected_id; checkInput(selected_id);
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
@@ -523,7 +538,7 @@
 
 					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
 					currentUserList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -531,7 +546,7 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 						while (true) {
 							if (currentUserList->user->USER_ID == selected_id) {
@@ -552,7 +567,7 @@
 						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && currentUser->isAdmin) {
 							editCurrentUser(currentUser, searchedUser);
 						}
@@ -622,7 +637,7 @@
 
 					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
 					currentUserList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -630,7 +645,7 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 						while (true) {
 							if (currentUserList->user->USER_ID == selected_id) {
@@ -651,7 +666,7 @@
 						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && currentUser->isAdmin) {
 							editCurrentUser(currentUser, searchedUser);
 						}
@@ -722,7 +737,7 @@
 
 					std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
 					currentUserList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -730,7 +745,7 @@
 						break;
 					}
 					case 1: {
-						std::cout << "Enter User ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter User ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 						while (true) {
 							if (currentUserList->user->USER_ID == selected_id) {
@@ -751,7 +766,7 @@
 						if (currentUser->isAdmin) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && currentUser->isAdmin) {
 							editCurrentUser(currentUser, searchedUser);
 						}
@@ -806,7 +821,7 @@
 
 						std::cout << "[0]Back"; std::cout << " [1]Select User to View" << std::endl;
 						currentUserList = headerforCurrentList;
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 
 						switch (selected_id) {
 
@@ -816,7 +831,7 @@
 						}
 						case 1: {
 							do {
-								std::cout << "Enter User ID to select:"; std::cin >> selected_id;
+								std::cout << "Enter User ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 								while (currentUserList->user != NULL) {
 									if (currentUserList->user->USER_ID == selected_id) {
@@ -841,7 +856,7 @@
 								if (currentUser->isAdmin) {
 									std::cout << "[1]Edit " << std::endl;
 								}
-								std::cin >> selected_id;
+								std::cin >> selected_id; checkInput(selected_id);
 								if (selected_id == 1 && currentUser->isAdmin) {
 									editCurrentUser(currentUser, searchedUser);
 								}
@@ -905,7 +920,7 @@
 			}
 			std::cout << "0. Finish edit\n\nChoice (eg. 1) : ";
 
-			std::cin >> selected_id;
+			std::cin >> selected_id; checkInput(selected_id);
 			switch (selected_id) {
 			case 0: {
 				system("cls");
@@ -952,16 +967,20 @@
 			case 8: {
 				std::cin.ignore();
 				std::cout << "\nAre you sure you want to delete the selected user?\n";
-				std::cout << "Please re-input User ID to confirm: \n"; std::cin >> selected_id;
-				if (selected_id == selectedUser->USER_ID) {
+				std::cout << "Please re-input User ID to confirm: \n"; std::cin >> selected_id; checkInput(selected_id);
+				if (selectedUser->USER_ID == selected_id) {
 					deleteCurrentUser(currentUser, selectedUser);
 				}
+				else {
+					std::cout << "Error! Confirmation failed!" << std::endl;
+					system("pause");
+					return;
+				}
 
-
-				break;
+				return;
 			}
 			default: {
-				std::cout << "\nInvalid input! Try again: "; std::cin >> selected_id;
+				std::cout << "\nInvalid input! Try again: "; std::cin >> selected_id; checkInput(selected_id);
 				break;
 			}
 			}
@@ -972,15 +991,47 @@
 
 	void User::deleteCurrentUser(UserData* currentUser, UserData* selectedUser) {
 
-		delete selectedUser;
-		selectedUser = NULL;
+		UserList* previous = NULL, * current;
+		currentUserList = headerUserList;
+		current = currentUserList;
+		while (current) {
+
+			if (current->user->USER_ID == selectedUser->USER_ID) {
+				if (previous == NULL) {//if first in list
+					headerUserList = current->next;
+					delete current;
+					current = NULL;
+					break;
+				}
+				else {
+					previous->next = current->next;
+					delete current;
+					current = NULL;
+					break;
+				}
+
+			}
+			else {
+				if (previous == NULL) {
+					previous = current;
+					current = current->next;
+				}
+				else {
+					previous = current;
+					current = current->next;
+				}
+			}
+
+
+		}
+
 
 		std::cout << "Selected User has been deleted" << std::endl;
+		system("pause");
 
 		saveUserInfoToDatabase();
 
 		return;
-
 
 
 	}
@@ -994,7 +1045,7 @@
 		std::cin.ignore();
 		if (currentUser->isAdmin) {
 
-			std::cout << "Select User ID:" << std::endl; std::cin >> selected_id;
+			std::cout << "Select User ID:" << std::endl; std::cin >> selected_id; checkInput(selected_id);
 		}
 		else {
 			std::cout << "You don't have permission to edit this User!"; return;
@@ -1024,3 +1075,16 @@
 		saveUserInfoToDatabase();
 	}
 
+	void User::checkInput(int& choice) {
+
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(INT_MAX, '\n');
+			std::cout << "You can only enter numbers.\n";
+			system("pause");
+			std::cout << "Enter a number: ";
+			std::cin >> choice;
+		}
+
+	}

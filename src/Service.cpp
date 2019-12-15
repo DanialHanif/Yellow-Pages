@@ -7,6 +7,8 @@ Service::Service() {
 	this->serviceList->next = NULL;
 	this->headerServiceList = serviceList;
 	this->currentServiceList = serviceList;
+	this->currentService = NULL;
+	this->headerforCurrentList = NULL;
 	loadServiceListFromDatabase();
 }
 
@@ -25,7 +27,7 @@ void Service::saveServiceListToDatabase(){
 
 	while (true) {
 
-		if (currentServiceList->service) {
+		if (currentServiceList->service != NULL) {
 			firstpart = "{" + std::to_string(currentServiceList->service->SERVICE_ID) + ";" + std::to_string(currentServiceList->service->SERVICE_OWNERID) + ";" + currentServiceList->service->SERVICE_NAME + ";"
 				+ currentServiceList->service->SERVICE_DESCRIPTION + ";" + currentServiceList->service->SERVICE_CONTACTNUMBER + ";" + currentServiceList->service->SERVICE_COMPANY + ";"
 				+ currentServiceList->service->SERVICE_WEBSITE + ";" + currentServiceList->service->SERVICE_POSTING_DATE + ";" + std::to_string(currentServiceList->service->SERVICE_PRICE) + "}";
@@ -172,7 +174,6 @@ void Service::addServiceDataFromDBToList(std::queue<std::string> serviceDataCont
 
 void Service::viewService(UserData* currentUser) {
 
-	ServiceList* headerforCurrentList;
 	if (headerServiceList->service == NULL) {
 		std::cout << "No Service in database. Please create one.";
 		return;
@@ -180,7 +181,7 @@ void Service::viewService(UserData* currentUser) {
 	else {
 		system("cls");
 		std::cout << "===================== Service Lists =====================" << std::endl;
-		std::cout << "Service ID\t| " << "Owner ID\t| " << "Service Name" << std::endl;
+		std::cout << "Service ID\t| " << "Owner ID\t| " << "Service Name" << std::endl << std::endl;
 
 		currentServiceList = headerServiceList;
 		while (currentServiceList->service != NULL) {
@@ -196,31 +197,36 @@ void Service::viewService(UserData* currentUser) {
 						break;
 					}
 				}
+				headerforCurrentList = headerServiceList;
 				goto done;
-				std::cout << "=========================================================" << std::endl;
 				break;
 			}
 			//iterate through service list until reach first match
-			else if (currentServiceList->service->SERVICE_OWNERID == currentUser->USER_ID) {
+			else if (currentUser->isEmployer && currentServiceList->service->SERVICE_OWNERID == currentUser->USER_ID) {
 				std::cout << currentServiceList->service->SERVICE_ID << "\t" << currentServiceList->service->SERVICE_OWNERID << "\t" << currentServiceList->service->SERVICE_NAME << std::endl;
-				while (currentServiceList->service != NULL) {
+				//while (currentServiceList->service != NULL) {
 
 					//add matches to user companies
 					if (currentUser->USER_SERVICES == NULL) {
-						currentUser->USER_SERVICES = currentServiceList;
+						currentUser->USER_SERVICES = new ServiceList;
+						currentUser->USER_SERVICES->next = NULL;
+						currentUser->USER_SERVICES->service = currentServiceList->service;
 						headerforCurrentList = currentUser->USER_SERVICES;
-						break;
-					}
-					else if (currentUser->USER_SERVICES != NULL && currentUser->USER_SERVICES->next == NULL) {
 
-						currentUser->USER_SERVICES->next = currentServiceList;
-						break;
+						//break;
+					}
+					else if (currentUser->USER_SERVICES->next == NULL) {
+						currentUser->USER_SERVICES->next = new ServiceList;
+						currentUser->USER_SERVICES->next->service = currentServiceList->service;
+						currentUser->USER_SERVICES->next->next = NULL;
+						currentUser->USER_SERVICES = currentUser->USER_SERVICES->next;
+						//break;
 
 					}
 					else {
-						break;
+						//break;
 					}
-				}
+				//}
 
 			}
 			if (currentServiceList->next != NULL) {
@@ -228,14 +234,22 @@ void Service::viewService(UserData* currentUser) {
 			}
 			else {
 				done:
-				int selected_id;
+
+				currentUser->USER_SERVICES = headerforCurrentList;
+
+				if (headerforCurrentList == NULL) std::cout << "No Service in database. Please create one.\n";
 
 				std::cout << "\n=========================================================" << std::endl;
 
 
-				std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
-				currentServiceList = headerforCurrentList;
-				std::cin >> selected_id;
+				int selected_id;
+
+
+				std::cout << "[0]Back"; 
+				if (headerforCurrentList != NULL) std::cout << " [1]Select Service to View" << std::endl;
+
+				std::cout << std::endl;
+				std::cin >> selected_id; checkInput(selected_id);
 
 				switch (selected_id) {
 
@@ -244,33 +258,38 @@ void Service::viewService(UserData* currentUser) {
 					break;
 				}
 				case 1: {
-					do {
-						std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+					
+						std::cout << "Enter Service ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
-						while (currentServiceList->service != NULL) {
+						currentServiceList = headerforCurrentList;
+						while (currentServiceList) {
+
 							if (currentServiceList->service->SERVICE_ID == selected_id) {
 								currentService = currentServiceList->service;
 								break;
 							}
-							else if (currentServiceList->next == NULL) {
-								std::cout << "No service with the selected id is found!" << std::endl;
-								break;
+
+							else if (currentServiceList->next != NULL) {
+								currentServiceList = currentServiceList->next;
+							
 							}
 							else {
-								currentServiceList = currentServiceList->next;
+								std::cout << "No service with the selected id is found!" << std::endl;
+								system("pause");
+								system("cls");
+								return;
 							}
 						}
 						if (currentService != NULL) {
 							break;
 						}
-					} while (selected_id);
 					if (currentService != NULL) {
 						viewCurrentServiceInfo(currentService);
 						std::cout << "[0]Back ";
 						if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
 							editCurrentService(currentUser, currentService);
 						}
@@ -372,13 +391,20 @@ void Service::addService(UserData* currentUser) {
 			serviceList = newService;
 			headerServiceList = serviceList;
 			currentServiceList = headerServiceList;
+			saveServiceListToDatabase();
+			viewService(currentUser);
 		}
 
 		else {
 
 			ServiceList* current = headerServiceList;
 			while (current) {
-				if (current->next == NULL) { current->next = newService; return; }
+				if (current->next == NULL) {
+					current->next = newService;
+					saveServiceListToDatabase();
+					viewService(currentUser);
+					return;
+				}
 
 				else {
 					current = current->next;
@@ -402,9 +428,9 @@ void Service::addService(UserData* currentUser) {
 			}
 		}*/
 
-		saveServiceListToDatabase();
+		/*saveServiceListToDatabase();
 		viewService(currentUser);
-		system("Pause");
+		system("Pause");*/
 }
 
 void Service::editService(UserData* currentUser){
@@ -415,7 +441,7 @@ void Service::editService(UserData* currentUser){
 		std::cin.ignore();
 		if (currentUser->isAdmin || currentUser->isEmployer) {
 			
-			std::cout << "Select Service ID:" << std::endl; std::cin >> selected_id;
+			std::cout << "Select Service ID:" << std::endl; std::cin >> selected_id; checkInput(selected_id);
 		}
 		else {
 			std::cout << "You don't have permission to edit this Service!"; return;
@@ -483,7 +509,7 @@ void Service::searchService(UserData* currentUser) {
 		std::cout << "4. View All  Services" << std::endl;
 		std::cout << "0. Exit Search" << std::endl;
 		std::cout << "\n\tChoice : ";
-		std::cin >> selected_id;
+		std::cin >> selected_id; checkInput(selected_id);
 
 		switch (selected_id) {
 			case 0: {
@@ -493,7 +519,7 @@ void Service::searchService(UserData* currentUser) {
 			}
 			case 1: {
 				std::cin.ignore();
-				std::cout << "Enter Service ID: "; std::cin >> selected_id;
+				std::cout << "Enter Service ID: "; std::cin >> selected_id; checkInput(selected_id);
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
@@ -540,7 +566,7 @@ void Service::searchService(UserData* currentUser) {
 					
 					std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
 					currentServiceList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -548,7 +574,7 @@ void Service::searchService(UserData* currentUser) {
 							break;
 						}
 						case 1: {
-							std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+							std::cout << "Enter Service ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 							while (true) {
 								if (currentServiceList->service->SERVICE_ID == selected_id) {
@@ -569,7 +595,7 @@ void Service::searchService(UserData* currentUser) {
 							if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
 								std::cout << "[1]Edit " << std::endl;
 							}
-							std::cin >> selected_id;
+							std::cin >> selected_id; checkInput(selected_id);
 							if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
 								editCurrentService(currentUser, currentService);
 							}
@@ -639,7 +665,7 @@ void Service::searchService(UserData* currentUser) {
 
 					std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
 					currentServiceList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -647,7 +673,7 @@ void Service::searchService(UserData* currentUser) {
 						break;
 					}
 					case 1: {
-						std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter Service ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 						while (true) {
 							if (currentServiceList->service->SERVICE_ID == selected_id) {
@@ -668,7 +694,7 @@ void Service::searchService(UserData* currentUser) {
 						if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
 							editCurrentService(currentUser, currentService);
 						}
@@ -739,7 +765,7 @@ void Service::searchService(UserData* currentUser) {
 
 					std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
 					currentServiceList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -747,7 +773,7 @@ void Service::searchService(UserData* currentUser) {
 							break;
 						}
 						case 1: {
-							std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+							std::cout << "Enter Service ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 							while (true) {
 								if (currentServiceList->service->SERVICE_ID == selected_id) {
@@ -768,7 +794,7 @@ void Service::searchService(UserData* currentUser) {
 							if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
 								std::cout << "[1]Edit " << std::endl;
 							}
-							std::cin >> selected_id;
+							std::cin >> selected_id; checkInput(selected_id);
 							if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
 								editCurrentService(currentUser, currentService);
 							}
@@ -823,7 +849,7 @@ void Service::searchService(UserData* currentUser) {
 
 						std::cout << "[0]Back"; std::cout << " [1]Select Service to View" << std::endl;
 						currentServiceList = headerforCurrentList;
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 
 						switch (selected_id) {
 
@@ -833,7 +859,7 @@ void Service::searchService(UserData* currentUser) {
 						}
 						case 1: {
 							do {
-								std::cout << "Enter Service ID to select:"; std::cin >> selected_id;
+								std::cout << "Enter Service ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 								while (currentServiceList->service != NULL) {
 									if (currentServiceList->service->SERVICE_ID == selected_id) {
@@ -858,7 +884,7 @@ void Service::searchService(UserData* currentUser) {
 								if (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID) {
 									std::cout << "[1]Edit " << std::endl;
 								}
-								std::cin >> selected_id;
+								std::cin >> selected_id; checkInput(selected_id);
 								if (selected_id == 1 && (currentUser->isAdmin || currentService->SERVICE_OWNERID == currentUser->USER_ID)) {
 									editCurrentService(currentUser, currentService);
 								}
@@ -934,9 +960,10 @@ void Service::editCurrentService(UserData* currentUser, ServiceData* selectedSer
 		std::cout << "6. Update Service Posting Date" << std::endl;
 		std::cout << "7. Update Service Price" << std::endl;
 		if (currentUser->isAdmin) std::cout << "8. Update Service Owner ID" << std::endl;
+		if (currentUser->isAdmin || currentUser->USER_ID == selectedService->SERVICE_OWNERID) std::cout << "9. Delete Service" << std::endl;
 		std::cout << "0. Finish edit" << std::endl;
 
-		std::cin >> selected_id;
+		std::cin >> selected_id; checkInput(selected_id);
 
 		switch (selected_id) {
 		case 0: {
@@ -979,8 +1006,31 @@ void Service::editCurrentService(UserData* currentUser, ServiceData* selectedSer
 			std::cout << "Enter new Service Price: "; std::cin >> selectedService->SERVICE_PRICE;
 			break;
 		}
+		case 8: {
+			std::cin.ignore();
+			std::cout << "Enter new Service Owner ID: "; std::cin >> selectedService->SERVICE_OWNERID;
+			break;
+		}
+		case 9: {
+			std::cin.ignore();
+			std::cout << "Are you sure you want to delete the selected company?\n";
+			std::cout << "Please re-input Service ID to confirm: \n";
+			std::cin >> selected_id;
+			checkInput(selected_id);
+
+			if (selectedService->SERVICE_ID == selected_id) {
+				deleteCurrentService(currentUser, selectedService);
+			}
+			else {
+				std::cout << "Error! Confirmation failed!" << std::endl;
+				system("pause");
+				return;
+			}
+
+			return;
+		}
 		default: {
-			std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
+			std::cout << "Invalid input! Try again: "; std::cin >> selected_id; checkInput(selected_id);
 			break;
 		}
 			
@@ -992,15 +1042,62 @@ void Service::editCurrentService(UserData* currentUser, ServiceData* selectedSer
 
 void Service::deleteCurrentService(UserData* currentUser, ServiceData* selectedService) {
 
-	delete selectedService;
-	selectedService = NULL;
+	ServiceList* previous = NULL, * current;
+	currentServiceList = headerServiceList;
+	current = currentServiceList;
+	while (current) {
+
+		if (current->service->SERVICE_ID == selectedService->SERVICE_ID) {
+			if (previous == NULL) {//if first in list
+				headerServiceList = current->next;
+				delete current;
+				current = NULL;
+				break;
+			}
+			else {
+				previous->next = current->next;
+				delete current;
+				current = NULL;
+				break;
+			}
+
+		}
+		else {
+			if (previous == NULL) {
+				previous = current;
+				current = current->next;
+			}
+			else {
+				previous = current;
+				current = current->next;
+			}
+		}
+
+
+	}
+
 
 	std::cout << "Selected Service has been deleted" << std::endl;
+	system("pause");
 
 	saveServiceListToDatabase();
 
 	return;
 
 
+
+}
+
+void Service::checkInput(int& choice) {
+
+	while (std::cin.fail())
+	{
+		std::cin.clear();
+		std::cin.ignore(INT_MAX, '\n');
+		std::cout << "You can only enter numbers.\n";
+		system("pause");
+		std::cout << "Enter a number: ";
+		std::cin >> choice;
+	}
 
 }

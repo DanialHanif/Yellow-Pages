@@ -7,6 +7,8 @@ Promotion::Promotion() {
 	this->promotionList->next = NULL;
 	this->headerPromotionList = promotionList;
 	this->currentPromotionList = promotionList;
+	this->currentPromotion = NULL;
+	this->headerforCurrentList = NULL;
 	loadPromotionListFromDatabase();
 }
 
@@ -25,7 +27,7 @@ void Promotion::savePromotionListToDatabase(){
 
 	while (true) {
 
-		if (currentPromotionList->promotion) {
+		if (currentPromotionList->promotion != NULL) {
 			firstpart = "{" + std::to_string(currentPromotionList->promotion->PROMOTION_ID) + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_OWNERID) + ";" + currentPromotionList->promotion->PROMOTION_NAME + ";" + currentPromotionList->promotion->PROMOTION_DESCRIPTION
 				+ ";" + currentPromotionList->promotion->PROMOTION_POSTING_DATE + ";" + std::to_string(currentPromotionList->promotion->PROMOTION_PRICE) + "}";
 
@@ -168,7 +170,6 @@ void Promotion::addPromotionDataFromDBToList(std::queue<std::string> promotionDa
 
 void Promotion::viewPromotion(UserData* currentUser) {
 
-	PromotionList* headerforCurrentList;
 	if (headerPromotionList->promotion == NULL) {
 		std::cout << "No Promotion in database. Please create one.";
 		return;
@@ -176,7 +177,7 @@ void Promotion::viewPromotion(UserData* currentUser) {
 	else {
 		system("cls");
 		std::cout << "===================== Promotion Lists =====================" << std::endl;
-		std::cout << "Promotion ID\t| " << "Owner ID\t| " << "Promotion Name" << std::endl;
+		std::cout << "Promotion ID\t| " << "Owner ID\t| " << "Promotion Name" << std::endl << std::endl;
 		
 		currentPromotionList = headerPromotionList;
 		while (currentPromotionList->promotion != NULL) {
@@ -192,46 +193,57 @@ void Promotion::viewPromotion(UserData* currentUser) {
 						break;
 					}
 				}
+				headerforCurrentList = headerPromotionList;
 				goto done;
-				std::cout << "=========================================================" << std::endl;
 				break;
 			}
 			//iterate through promotion list until reach first match
-			else if (currentPromotionList->promotion->PROMOTION_OWNERID == currentUser->USER_ID) {
+			else if (currentUser->isEmployer && currentPromotionList->promotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 				std::cout << currentPromotionList->promotion->PROMOTION_ID << "\t" << currentPromotionList->promotion->PROMOTION_OWNERID << "\t" << currentPromotionList->promotion->PROMOTION_NAME << std::endl;
-				while (currentPromotionList->promotion != NULL) {
 										
 					//add matches to user companies
 					if (currentUser->USER_PROMOTION == NULL) {
-						currentUser->USER_PROMOTION = currentPromotionList;
+						currentUser->USER_PROMOTION = new PromotionList;
+						currentUser->USER_PROMOTION->next = NULL;
+						currentUser->USER_PROMOTION->promotion = currentPromotionList->promotion;
 						headerforCurrentList = currentUser->USER_PROMOTION;
-						break;
-					}
-					else if (currentUser->USER_PROMOTION != NULL && currentUser->USER_PROMOTION->next == NULL) {
 
-						currentUser->USER_PROMOTION->next = currentPromotionList;
-						break;
+						//break;
+					}
+					else if (currentUser->USER_PROMOTION->next == NULL) {
+						currentUser->USER_PROMOTION->next = new PromotionList;
+						currentUser->USER_PROMOTION->next->promotion = currentPromotionList->promotion;
+						currentUser->USER_PROMOTION->next->next = NULL;
+						currentUser->USER_PROMOTION = currentUser->USER_PROMOTION->next;
+						//break;
 
 					}
 					else {
-						break;
+						//break;
 					}
-				}
+				
 				
 			}
 			if (currentPromotionList->next != NULL) {
 				currentPromotionList = currentPromotionList->next;
 			}
 			else {
-				done:
+			done:
+
+				currentUser->USER_PROMOTION = headerforCurrentList;
+
+				if (headerforCurrentList == NULL) std::cout << "No Promotion in database. Please create one.\n";
+				
+				std::cout << "\n=========================================================" << std::endl;
 				int selected_id;
 
-				std::cout << "\n=========================================================" << std::endl;
 
 
-				std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
-				currentPromotionList = headerforCurrentList;
-				std::cin >> selected_id;
+				std::cout << "[0]Back";
+				if (headerforCurrentList != NULL) std::cout << " [1]Select Company to View";
+
+				std::cout << std::endl;
+				std::cin >> selected_id; checkInput(selected_id);
 
 				switch (selected_id) {
 
@@ -239,9 +251,10 @@ void Promotion::viewPromotion(UserData* currentUser) {
 					break;
 				}
 				case 1: {
-					std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+					std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
-					while (true) {
+					currentPromotionList = headerforCurrentList;
+					while (currentPromotionList) {
 						if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
 							currentPromotion = currentPromotionList->promotion;
 							break;
@@ -251,7 +264,10 @@ void Promotion::viewPromotion(UserData* currentUser) {
 							return;
 						}
 						else {
-							currentPromotionList = currentPromotionList->next;
+							std::cout << "No promotion with the selected id is found!" << std::endl;
+							system("pause");
+							system("cls");
+							return;
 						}
 					}
 
@@ -260,7 +276,7 @@ void Promotion::viewPromotion(UserData* currentUser) {
 					if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 						std::cout << "[1]Edit " << std::endl;
 					}
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 					if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
 						editCurrentPromotion(currentUser, currentPromotion);
 					}
@@ -360,14 +376,20 @@ void Promotion::addPromotion(UserData* currentUser) {
 			promotionList = newPromotion;
 			headerPromotionList = promotionList;
 			currentPromotionList = headerPromotionList;
+			savePromotionListToDatabase();
+			viewPromotion(currentUser);
 		}
 
 		else {
 
 			PromotionList* current = headerPromotionList;
 			while (current) {
-				if (current->next == NULL) { current->next = newPromotion; return; }
-
+				if (current->next == NULL) {
+					current->next = newPromotion;
+					savePromotionListToDatabase();
+					viewPromotion(currentUser);
+					return;
+				}
 				else {
 					current = current->next;
 				}
@@ -390,9 +412,9 @@ void Promotion::addPromotion(UserData* currentUser) {
 			}
 		}*/
 
-		savePromotionListToDatabase();
-		viewPromotion(currentUser);
-		system("Pause");
+		//savePromotionListToDatabase();
+		//viewPromotion(currentUser);
+		//system("Pause");
 }
 
 void Promotion::editPromotion(UserData* currentUser){
@@ -403,7 +425,7 @@ void Promotion::editPromotion(UserData* currentUser){
 		std::cin.ignore();
 		if (currentUser->isAdmin || currentUser->isEmployer) {
 			
-			std::cout << "Select Promotion ID:" << std::endl; std::cin >> selected_id;
+			std::cout << "Select Promotion ID:" << std::endl; std::cin >> selected_id; checkInput(selected_id);
 		}
 		else {
 			std::cout << "You don't have permission to edit this Promotion!"; return;
@@ -457,7 +479,7 @@ void Promotion::deletePromotion(UserData* currentUser){
 	std::cin.ignore();
 	if (currentUser->isAdmin || currentUser->isEmployer) {
 
-		std::cout << "Select Promotion ID:" << std::endl; std::cin >> selected_id;
+		std::cout << "Select Promotion ID:" << std::endl; std::cin >> selected_id; checkInput(selected_id);
 	}
 	else {
 		std::cout << "You don't have permission to edit this Promotion!"; return;
@@ -520,7 +542,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 		std::cout << "4. View All Promotions" << std::endl;
 		std::cout << "0. Exit Search" << std::endl;
 		std::cout << "\n\tChoice : ";
-		std::cin >> selected_id;
+		std::cin >> selected_id; checkInput(selected_id);
 
 		switch (selected_id) {
 			case 0: {
@@ -530,7 +552,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 			}
 			case 1: {
 				std::cin.ignore();
-				std::cout << "Enter Promotion ID: "; std::cin >> selected_id;
+				std::cout << "Enter Promotion ID: "; std::cin >> selected_id; checkInput(selected_id);
 
 				system("cls");
 				std::cout << "===================== Results =====================" << std::endl;
@@ -577,7 +599,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 					
 					std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
 					currentPromotionList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -585,7 +607,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 							break;
 						}
 						case 1: {
-							std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+							std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 							while (true) {
 								if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
@@ -606,7 +628,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 							if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 								std::cout << "[1]Edit " << std::endl;
 							}
-							std::cin >> selected_id;
+							std::cin >> selected_id; checkInput(selected_id);
 							if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
 								editCurrentPromotion(currentUser, currentPromotion);
 							}
@@ -676,7 +698,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 
 					std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
 					currentPromotionList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -684,7 +706,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 						break;
 					}
 					case 1: {
-						std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+						std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 						while (true) {
 							if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
@@ -705,7 +727,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 						if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 							std::cout << "[1]Edit " << std::endl;
 						}
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 						if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
 							editCurrentPromotion(currentUser, currentPromotion);
 						}
@@ -776,7 +798,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 
 					std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
 					currentPromotionList = headerforCurrentList;
-					std::cin >> selected_id;
+					std::cin >> selected_id; checkInput(selected_id);
 
 					switch (selected_id) {
 
@@ -784,7 +806,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 							break;
 						}
 						case 1: {
-							std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+							std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 							while (true) {
 								if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
@@ -805,7 +827,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 							if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 								std::cout << "[1]Edit " << std::endl;
 							}
-							std::cin >> selected_id;
+							std::cin >> selected_id; checkInput(selected_id);
 							if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
 								editCurrentPromotion(currentUser, currentPromotion);
 							}
@@ -860,7 +882,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 
 						std::cout << "[0]Back"; std::cout << " [1]Select Promotion to View" << std::endl;
 						currentPromotionList = headerforCurrentList;
-						std::cin >> selected_id;
+						std::cin >> selected_id; checkInput(selected_id);
 
 						switch (selected_id) {
 
@@ -870,7 +892,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 						}
 						case 1: {
 							do {
-								std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id;
+								std::cout << "Enter Promotion ID to select:"; std::cin >> selected_id; checkInput(selected_id);
 
 								while (currentPromotionList->promotion != NULL) {
 									if (currentPromotionList->promotion->PROMOTION_ID == selected_id) {
@@ -895,7 +917,7 @@ void Promotion::searchPromotion(UserData* currentUser) {
 								if (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID) {
 									std::cout << "[1]Edit " << std::endl;
 								}
-								std::cin >> selected_id;
+								std::cin >> selected_id; checkInput(selected_id);
 								if (selected_id == 1 && (currentUser->isAdmin || currentPromotion->PROMOTION_OWNERID == currentUser->USER_ID)) {
 									editCurrentPromotion(currentUser, currentPromotion);
 								}
@@ -964,9 +986,10 @@ void Promotion::editCurrentPromotion(UserData* currentUser, PromotionData* selec
 		std::cout << "3. Update Promotion Posting Date" << std::endl;
 		std::cout << "4. Update Promotion Price" << std::endl;
 		if (currentUser->isAdmin) std::cout << "5. Update Promotion Owner ID" << std::endl;
+		if (currentUser->isAdmin || currentUser->USER_ID == selectedPromotion->PROMOTION_OWNERID) std::cout << "6. Delete Promotion" << std::endl;
 		std::cout << "0. Finish edit" << std::endl;
 
-		std::cin >> selected_id;
+		std::cin >> selected_id; checkInput(selected_id);
 
 		switch (selected_id) {
 		case 0: {
@@ -999,8 +1022,26 @@ void Promotion::editCurrentPromotion(UserData* currentUser, PromotionData* selec
 			std::cout << "Enter new Promotion Owner ID: "; std::cin >> selectedPromotion->PROMOTION_OWNERID;
 			break;
 		}
+		case 6: {
+			std::cin.ignore();
+			std::cout << "Are you sure you want to delete the selected promotion?\n";
+			std::cout << "Please re-input Promotion ID to confirm: \n";
+			std::cin >> selected_id;
+			checkInput(selected_id);
+
+			if (selectedPromotion->PROMOTION_ID == selected_id) {
+				deleteCurrentPromotion(currentUser, selectedPromotion);
+			}
+			else {
+				std::cout << "Error! Confirmation failed!" << std::endl;
+				system("pause");
+				return;
+			}
+
+			return;
+		}
 		default: {
-			std::cout << "Invalid input! Try again: "; std::cin >> selected_id;
+			std::cout << "Invalid input! Try again: "; std::cin >> selected_id; checkInput(selected_id);
 			break;
 		}
 			
@@ -1013,16 +1054,47 @@ void Promotion::editCurrentPromotion(UserData* currentUser, PromotionData* selec
 
 void Promotion::deleteCurrentPromotion(UserData* currentUser, PromotionData* selectedPromotion) {
 
-	delete selectedPromotion;
-	selectedPromotion = NULL;
+	PromotionList* previous = NULL, * current;
+	currentPromotionList = headerPromotionList;
+	current = currentPromotionList;
+	while (current) {
+
+		if (current->promotion->PROMOTION_ID == selectedPromotion->PROMOTION_ID) {
+			if (previous == NULL) {//if first in list
+				headerPromotionList = current->next;
+				delete current;
+				current = NULL;
+				break;
+			}
+			else {
+				previous->next = current->next;
+				delete current;
+				current = NULL;
+				break;
+			}
+
+		}
+		else {
+			if (previous == NULL) {
+				previous = current;
+				current = current->next;
+			}
+			else {
+				previous = current;
+				current = current->next;
+			}
+		}
+
+
+	}
+
 
 	std::cout << "Selected Promotion has been deleted" << std::endl;
+	system("pause");
 
 	savePromotionListToDatabase();
 
-
 	return;
-
 
 
 }
@@ -1054,3 +1126,17 @@ void Promotion::deleteCurrentPromotion(UserData* currentUser, PromotionData* sel
 //		std::cout<<"==========================================================";
 //	}
 //}
+
+void Promotion::checkInput(int& choice) {
+
+	while (std::cin.fail())
+	{
+		std::cin.clear();
+		std::cin.ignore(INT_MAX, '\n');
+		std::cout << "You can only enter numbers.\n";
+		system("pause");
+		std::cout << "Enter a number: ";
+		std::cin >> choice;
+	}
+
+}

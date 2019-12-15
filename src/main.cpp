@@ -8,6 +8,8 @@
 
 void MainMenu();
 
+void checkInput(int& choice);
+
 int main() {
 
 	MainMenu();
@@ -16,17 +18,30 @@ int main() {
 	return 0;
 }
 
+void checkInput(int& choice) {
+
+	while (std::cin.fail())
+	{
+		std::cin.clear();
+		std::cin.ignore(INT_MAX, '\n');
+		std::cout << "You can only enter numbers.\n";
+		system("pause");
+		std::cout << "Enter a number: ";
+		std::cin >> choice;
+	}
+
+}
+
 void MainMenu() {
+
 
 	
 	int choice;
-	Company companyModule;
-	Job jobModule;
-	Service serviceModule;
-	Promotion promotionModule;
+	
+	
 
 	do {
-		User userModule;
+		
 		std::cout << "+========================================================================+" << std::endl;
 		std::cout << "+                     Welcome to Yellow Pages system!                    +" << std::endl;
 		std::cout << "+    The yellow pages are any telephone directory of businesses          +" << std::endl;
@@ -39,6 +54,9 @@ void MainMenu() {
 		std::cout << "0) Exit" << std::endl;
 		std::cout << "\nChoice (eg. 1) : ";
 		std::cin >> choice;
+
+		checkInput(choice);
+
 		std::cout << "\n";
 		switch (choice)
 		{
@@ -48,17 +66,20 @@ void MainMenu() {
 		case 1:
 			{
 				system("cls");
-				User a;
-				a.setup();
+				User userModule;
+				userModule.setup();
 				std::cout<< "You have successfully registered!\n";
-				a.viewCurrentUserInfo(a.getUserData());
+				userModule.viewCurrentUserInfo(userModule.getUserData());
 				break; 
 			}
 
 		case 2:
 			{
-
-
+			User userModule;
+			Company companyModule;
+			Job jobModule;
+			Service serviceModule;
+			Promotion promotionModule;
 			if (userModule.login())
 			{
 				int choiceMenu;
@@ -71,19 +92,20 @@ void MainMenu() {
 
 					std::cout << "Choice: ";
 					std::cin >> choiceMenu;
+					checkInput(choiceMenu);
 					system("cls");
 
 					switch (choiceMenu)
-					{
-					case 1: //to update data about user
-					{
+						{
+						case 1: //to update data about user
+						{
 						userModule.viewCurrentUserInfo(userModule.getUserData());
 						userModule.editCurrentUser(userModule.getUserData(), userModule.getUserData());
 						//std::cout << "\nYou choose to update your personal data \n";
 						break;
 					}
-					case 2://view company
-					{
+						case 2://view company
+						{
 						std::cout << "\nYou choose view Company \n\n";
 						//system("pause");
 						int chooseCompany;
@@ -113,7 +135,6 @@ void MainMenu() {
 							case 2:
 							{
 								companyModule.viewCompany(userModule.getUserData());
-								system("pause");
 								system("cls");
 								break;
 							}
@@ -132,8 +153,8 @@ void MainMenu() {
 						} while (chooseCompany);
 						break;
 					}
-					case 3://view job
-					{
+						case 3://view job
+						{
 						std::cout << "\nYou choose view Job \n\n";
 						//system("pause");
 						
@@ -180,8 +201,8 @@ void MainMenu() {
 
 						break;
 					}
-					case 4://view service
-					{
+						case 4://view service
+						{
 						std::cout << "\nYou choose view Service \n\n";
 						system("pause");
 						
@@ -228,8 +249,8 @@ void MainMenu() {
 
 						break;
 					}
-					case 5://view promotion
-					{
+						case 5://view promotion
+						{
 						std::cout << "\nYou choose view Promotion \n\n";
 						system("pause");
 						
@@ -276,8 +297,8 @@ void MainMenu() {
 
 						break;
 					}
-					case 6://view user
-					{
+						case 6://view user
+						{
 						if (!userModule.getUserData()->isAdmin) {
 							break;
 						}
@@ -321,22 +342,22 @@ void MainMenu() {
 
 						break;
 					}
-					case 0://logout
-					{
-						std::cout << "You have been logout" << std::endl;
-						userModule.logout();
-						break;
-					}
-					default://wrong entry
-					{
-						break;
-					}
+						case 0://logout
+						{
+							std::cout << "You have been logout" << std::endl;
+							userModule.logout();
+							break;
+						}
+						default://wrong entry
+						{
+							break;
+						}
 					}
 				}while (choiceMenu);
 			}
 			else
 			{
-			
+
 			break;
 		
 			}
@@ -345,6 +366,7 @@ void MainMenu() {
 		}
 		case 3:
 		{
+			User userModule;
 			userModule.guest();
 			//system("cls");
 			int guestChoose;
@@ -360,38 +382,42 @@ void MainMenu() {
 				std::cout << "\t+================================================================+\n";
 				std::cout << "\n\tChoice (eg. 1) : ";
 				std::cin >> guestChoose;
+				checkInput(guestChoose);
 				
 				system("cls");
 				switch(guestChoose)
 				{
+					case 0:
+						break;
+
 					case 1:
 					{
-						Company companyObjects;
-						companyObjects.searchCompany(userModule.getUserData());
+						Company companyModule;
+						companyModule.searchCompany(userModule.getUserData());
 						system("pause");
 						system("cls");
 						break;
 					}
 					case 2:
 					{
-						Job jobsObjects;
-						jobsObjects.searchJob(userModule.getUserData());
+						Job jobModule;
+						jobModule.searchJob(userModule.getUserData());
 						system("pause");
 						system("cls");
 						break;
 					}
 					case 3:
 					{
-						Service serviceObjects;
-						serviceObjects.searchService(userModule.getUserData());
+						Service serviceModule;
+						serviceModule.searchService(userModule.getUserData());
 						system("pause");
 						system("cls");
 						break;
 					}
 					case 4:
 					{
-						Promotion promotionObjects;
-						promotionObjects.searchPromotion(userModule.getUserData());
+						Promotion promotionModule;
+						promotionModule.searchPromotion(userModule.getUserData());
 						system("pause");
 						system("cls");
 						break;
@@ -412,6 +438,7 @@ void MainMenu() {
 			system("cls");
 			break;
 		}
+
 	} while (choice);
 	system("pause");
 	system("cls");

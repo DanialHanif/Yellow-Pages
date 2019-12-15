@@ -17,6 +17,7 @@ class Company {
 		CompanyList* headerCompanyList;
 		CompanyList* currentCompanyList;
 		CompanyData* currentCompany;
+		CompanyList* headerforCurrentList;
 
 
 	public:
@@ -43,6 +44,7 @@ class Company {
 		//void viewCompanyguest();//for guest
 
 		void clearList();
+		void checkInput(int&);
 
 };
 

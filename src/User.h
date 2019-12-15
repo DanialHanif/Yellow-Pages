@@ -63,6 +63,7 @@ class User {
         void guest();
 
         void clearList();
+		void checkInput(int&);
         
 
 };

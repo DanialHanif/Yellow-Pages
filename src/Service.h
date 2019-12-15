@@ -17,6 +17,7 @@ protected:
 	ServiceList* headerServiceList;
 	ServiceList* currentServiceList;
 	ServiceData* currentService;
+	ServiceList* headerforCurrentList;
 
 
 public:
@@ -41,7 +42,7 @@ public:
 	void deleteCurrentService(UserData*, ServiceData*);
 
 	void clearList();
-
+	void checkInput(int&);
 };
 
 #endif // !SERVICE_H

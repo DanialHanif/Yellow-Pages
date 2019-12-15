@@ -240,6 +240,7 @@ void Company::viewCompany(UserData* currentUser) {
 				if (headerforCurrentList != NULL) std::cout << " [1]Select Company to View";
 				
 				std::cout << std::endl;
+				std::cout << "Choice: ";
 				std::cin >> selected_id;
 				checkInput(selected_id);
 				switch (selected_id) {
@@ -612,6 +613,7 @@ void Company::searchCompany(UserData* currentUser) {
 
 					
 					std::cout << "[0]Back"; std::cout << " [1]Select Company to View" << std::endl;
+					std::cout << "Choice: ";
 					currentCompanyList = headerforCurrentList;
 					std::cin >> selected_id;
 					checkInput(selected_id);
@@ -643,6 +645,7 @@ void Company::searchCompany(UserData* currentUser) {
 								std::cout << "[1]Edit " << std::endl;
 							}
 							std::cin >> selected_id; checkInput(selected_id);
+							std::cout << "Choice: ";
 							if (selected_id == 1 && (currentUser->isAdmin || currentCompany->COMPANY_OWNERID == currentUser->USER_ID)) {
 								system("cls");
 								editCurrentCompany(currentUser, currentCompany);
@@ -1016,7 +1019,7 @@ void Company::editCurrentCompany(UserData* currentUser, CompanyData* selectedCom
 			std::cout << "7. Delete Company" << std::endl;
 		}
 		std::cout << "0. Finish edit" << std::endl;
-
+		std::cout << "Choice: ";
 		std::cin >> selected_id;
 		checkInput(selected_id);
 

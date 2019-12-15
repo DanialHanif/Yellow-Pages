@@ -56,7 +56,7 @@ void MainMenu() {
 		std::cin >> choice;
 
 		checkInput(choice);
-
+		system("cls");
 		std::cout << "\n";
 		switch (choice)
 		{
@@ -65,7 +65,7 @@ void MainMenu() {
 
 		case 1:
 			{
-				system("cls");
+				
 				User userModule;
 				userModule.setup();
 				std::cout<< "You have successfully registered!\n";
@@ -85,7 +85,7 @@ void MainMenu() {
 				int choiceMenu;
 				do
 				{
-					system("cls");
+					std::cout << "\n=========================================================\n\n";
 					userModule.viewCurrentUserInfo(userModule.getUserData());
 					std::cout << "\n=========================================================\n\n";
 					userModule.userMenu();
@@ -440,7 +440,5 @@ void MainMenu() {
 		}
 
 	} while (choice);
-	system("pause");
-	system("cls");
 }
 

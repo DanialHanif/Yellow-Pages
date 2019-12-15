@@ -249,6 +249,7 @@ void Job::viewJob(UserData* currentUser) {
 				if (headerforCurrentList != NULL) std::cout << " [1]Select Job to View" << std::endl;
 				
 				std::cout << std::endl;
+				std::cout << "Choice: ";
 				std::cin >> selected_id;
 				checkInput(selected_id);
 				switch (selected_id) {
@@ -614,6 +615,7 @@ void Job::searchJob(UserData* currentUser) {
 
 				std::cout << "[0]Back"; std::cout << " [1]Select Job to View" << std::endl;
 				currentJobList = headerforCurrentList;
+				std::cout << "Choice: ";
 				std::cin >> selected_id; checkInput(selected_id);
 
 				switch (selected_id) {
@@ -643,6 +645,7 @@ void Job::searchJob(UserData* currentUser) {
 					if (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID) {
 						std::cout << "[1]Edit " << std::endl;
 					}
+					std::cout << "Choice: ";
 					std::cin >> selected_id; checkInput(selected_id);
 					if (selected_id == 1 && (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID)) {
 						editCurrentJob(currentUser, currentJob);
@@ -713,6 +716,7 @@ void Job::searchJob(UserData* currentUser) {
 
 				std::cout << "[0]Back"; std::cout << " [1]Select Job to View" << std::endl;
 				currentJobList = headerforCurrentList;
+				std::cout << "Choice: ";
 				std::cin >> selected_id; checkInput(selected_id);
 
 				switch (selected_id) {
@@ -742,6 +746,7 @@ void Job::searchJob(UserData* currentUser) {
 					if (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID) {
 						std::cout << "[1]Edit " << std::endl;
 					}
+					std::cout << "Choice: ";
 					std::cin >> selected_id; checkInput(selected_id);
 					if (selected_id == 1 && (currentUser->isAdmin || currentJob->JOB_OWNERID == currentUser->USER_ID)) {
 						editCurrentJob(currentUser, currentJob);
